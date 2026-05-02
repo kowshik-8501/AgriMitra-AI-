@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.venv
+venv/
+ENV/
+static/uploads/*
+static/audio/*
+!static/uploads/.gitkeep
+!static/audio/.gitkeep
+.env
+.DS_Store

@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block pagetitle %}Contact Us{% endblock pagetitle %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="text-center mb-5 animate-up">
+        <div class="badge-diagnosis mb-3">Get in Touch</div>
+        <h1 class="display-4 text-gradient mb-3">Connect With Us</h1>
+        <p class="text-white-50 lead mx-auto" style="max-width: 600px;">Have questions or feedback? Reach out to the visionary behind LeafDoc AI.</p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        <!-- Developer Profile -->
+        <div class="col-lg-6 animate-up">
+            <div class="glass-card p-5 h-100 text-center shadow-lg border-0">
+                <div class="mb-4">
+                    <div class="avatar-bg mx-auto mb-3">
+                        <i class="bi bi-person-circle text-primary-light display-3"></i>
+                    </div>
+                    <h2 class="h3 fw-bold text-white mb-1">Remalla Ratnakowshik</h2>
+                    <p class="text-neon-emerald small fw-bold mb-4">Veltech Student | AI & Systems Developer</p>
+                </div>
+                <p class="text-white-50 mb-5">
+                    A dedicated developer focused on leveraging Artificial Intelligence to solve real-world agricultural challenges. Passionate about Deep Learning and building scalable, sustainable farming technologies.
+                </p>
+                
+                <div class="contact-details mb-5">
+                    <div class="d-flex align-items-center justify-content-center mb-4">
+                        <div class="icon-box bg-primary bg-opacity-10 p-2 rounded-3 me-3">
+                            <i class="bi bi-envelope-at-fill text-primary-light fs-4"></i>
+                        </div>
+                        <span class="neon-text fs-5">ratnakowshik8501@gmail.com</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-center">
+                        <div class="icon-box bg-primary bg-opacity-10 p-2 rounded-3 me-3">
+                            <i class="bi bi-instagram text-primary-light fs-4"></i>
+                        </div>
+                        <span class="neon-text fs-5">_ratna._.kowshik_r</span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="mailto:ratnakowshik8501@gmail.com" class="social-link-btn" title="Email"><i class="bi bi-envelope"></i></a>
+                    <a href="https://www.instagram.com/_ratna._.kowshik_r" target="_blank" class="social-link-btn" title="Instagram"><i class="bi bi-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-bg {
+        width: 140px;
+        height: 140px;
+        background: rgba(16, 185, 129, 0.1);
+        border: 2px solid rgba(16, 185, 129, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+    }
+    .glass-card:hover .avatar-bg {
+        transform: scale(1.05) rotate(5deg);
+        border-color: var(--primary);
+        box-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
+    }
+    .social-link-btn {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        color: #fff;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    .social-link-btn:hover {
+        background: var(--primary);
+        transform: translateY(-5px);
+        color: #fff;
+        box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+    }
+</style>
+{% endblock body %}

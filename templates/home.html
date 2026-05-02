@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block pagetitle %}Home{% endblock pagetitle %}
+
+{% block body %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container text-center">
+        <div class="badge-diagnosis mb-3 animate-up">Powered by Advanced AI</div>
+        <h1 class="animate-up text-gradient">Protect Your Greenery <br>with Artificial Intelligence</h1>
+        <p class="animate-up mx-auto mb-5" style="animation-delay: 0.2s">Identify plant diseases instantly with our advanced neural
+            network. Join thousands of farmers and gardeners in ensuring a healthier future for our planet.</p>
+        <div class="animate-up d-flex justify-content-center gap-3" style="animation-delay: 0.4s">
+            <a href="/index" class="btn btn-primary-custom btn-lg">Start Diagnosis Now</a>
+            <a href="/crop" class="btn btn-outline-custom btn-lg">Crop Prediction</a>
+        </div>
+    </div>
+</section>
+
+<!-- Supported Plants Section -->
+<section class="container mb-5">
+    <div class="text-center mb-5 animate-up">
+        <h2 class="display-6">Plants We Support</h2>
+        <p class="text-white-50">Our AI is trained on over 38 different disease categories across these species</p>
+    </div>
+
+    <div class="card-grid">
+        <!-- Apple -->
+        <div class="glass-card plant-card p-3 animate-up" style="animation-delay: 0.1s">
+            <img src="https://img.lb.wbmdstatic.com/vim/live/webmd/consumer_assets/site_images/articles/health_tools/healing_foods_slideshow/1800ss_getty_rf_apples.jpg?resize=750px:*&output-quality=75"
+                alt="Apple">
+            <h3>Apple</h3>
+        </div>
+        <!-- Blueberry -->
+        <div class="glass-card plant-card p-3 animate-up" style="animation-delay: 0.15s">
+            <img src="https://images.unsplash.com/photo-1498557850523-fd3d118b962e?auto=format&fit=crop&q=80&w=600"
+                alt="Blueberry">
+            <h3>Blueberry</h3>
+        </div>
+        <!-- Cherry -->
+        <div class="glass-card plant-card p-3 animate-up" style="animation-delay: 0.2s">
+            <img src="https://images.pexels.com/photos/13006744/pexels-photo-13006744.jpeg?cs=srgb&dl=pexels-asphotography-13006744.jpg&fm=jpg"
+                alt="Cherry">
+            <h3>Cherry</h3>
+        </div>
+        <!-- Corn -->
+        <div class="glass-card plant-card p-3 animate-up" style="animation-delay: 0.25s">
+            <img src="https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&q=80&w=600"
+                alt="Corn">
+            <h3>Corn</h3>
+        </div>
+        <!-- Grape -->
+        <div class="glass-card plant-card p-3 animate-up" style="animation-delay: 0.3s">
+            <img src="https://m.media-amazon.com/images/I/51qW4jcUVJL._AC_UF1000,1000_QL80_.jpg" alt="Grape">
+            <h3>Grape</h3>
+        </div>
+        <!-- Orange -->
+        <div class="glass-card plant-card p-3 animate-up" style="animation-delay: 0.35s">
+            <img src="https://images.unsplash.com/photo-1557800636-894a64c1696f?auto=format&fit=crop&q=80&w=600"
+                alt="Orange">
+            <h3>Orange</h3>
+        </div>
+        <!-- Peach -->
+        <div class="glass-card plant-card p-3 animate-up" style="animation-delay: 0.4s">
+            <img src="https://images.unsplash.com/photo-1529158062015-cad636e205a0?auto=format&fit=crop&q=80&w=600"
+                alt="Peach">
+            <h3>Peach</h3>
+        </div>
+        <!-- Potato -->
+        <div class="glass-card plant-card p-3 animate-up" style="animation-delay: 0.45s">
+            <img src="https://images.unsplash.com/photo-1675501344642-92d35d90fe51?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8cG90YXRvfGVufDB8fDB8fHww"
+                alt="Potato">
+            <h3>Potato</h3>
+        </div>
+        <!-- Strawberry -->
+        <div class="glass-card plant-card p-3 animate-up" style="animation-delay: 0.5s">
+            <img src="https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&q=80&w=600"
+                alt="Strawberry">
+            <h3>Strawberry</h3>
+        </div>
+        <!-- Tomato -->
+        <div class="glass-card plant-card p-3 animate-up" style="animation-delay: 0.55s">
+            <img src="https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&q=80&w=600"
+                alt="Tomato">
+            <h3>Tomato</h3>
+        </div>
+    </div>
+</section>
+{% endblock body %}

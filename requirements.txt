@@ -1,0 +1,18 @@
+Flask
+gunicorn
+numpy
+pandas
+Pillow
+torch==2.2.0 --index-url https://download.pytorch.org/whl/cpu
+torchvision==0.17.0 --index-url https://download.pytorch.org/whl/cpu
+deep-translator
+gTTS
+Werkzeug
+Jinja2
+MarkupSafe
+click
+itsdangerous
+python-dateutil
+pytz
+six
+typing-extensions

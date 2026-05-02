@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block pagetitle %}AI Engine{% endblock pagetitle %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="text-center mb-5 animate-up">
+        <div class="badge-diagnosis mb-3">Health Scanner</div>
+        <h1 class="display-4 text-gradient mb-3">AI Diagnosis Engine</h1>
+        <p class="text-white-50 lead mx-auto" style="max-width: 600px;">Upload an image of your plant's leaf to get an instant, high-precision health report powered by our neural network.</p>
+    </div>
+
+    <div class="row g-4 mb-5 justify-content-center">
+        <!-- Info Card 1 -->
+        <div class="col-lg-4 animate-up" style="animation-delay: 0.1s">
+            <div class="glass-card p-4 h-100 d-flex flex-column">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="icon-box bg-primary bg-opacity-10 p-3 rounded-4 me-3">
+                        <i class="bi bi-info-circle-fill text-primary fs-3"></i>
+                    </div>
+                    <h5 class="mb-0">Why Diagnose?</h5>
+                </div>
+                <p class="text-white-50 small flex-grow-1">Early detection is the backbone of sustainable farming. Our AI analyzes cellular patterns to spot diseases before they devastate your yield.</p>
+                <div class="mt-4 pt-4 border-top border-secondary border-opacity-10">
+                    <div class="d-flex align-items-center text-primary-light small fw-bold">
+                        <i class="bi bi-check2-circle me-2"></i> 98% Accuracy Rate
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Card -->
+        <div class="col-lg-4 animate-up" style="animation-delay: 0.2s">
+            <div class="glass-card p-4 h-100">
+                <form action="/submit" method="POST" enctype="multipart/form-data" id="uploadForm">
+                    <div class="upload-box mb-4" onclick="document.getElementById('actual-btn').click()">
+                        <i class="bi bi-cloud-plus-fill upload-icon d-block"></i>
+                        <h6 id="file-chosen" class="fw-bold">Drop leaf image here</h6>
+                        <p class="text-white-50 x-small mt-2">or click to browse files</p>
+                        <input type="file" id="actual-btn" hidden name="image" accept="image/*" />
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label text-primary-light fw-bold small">Analysis Language</label>
+                        <select name="language" class="form-select glass-input-small w-100">
+                            <option value="en">English (Default)</option>
+                            <option value="te">Telugu (తెలుగు)</option>
+                            <option value="ta">Tamil (தமிழ்)</option>
+                            <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                            <option value="hi">Hindi (हिन्दी)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary-custom w-100 py-3 d-flex align-items-center justify-content-center gap-2">
+                        <i class="bi bi-cpu"></i>
+                        Run Deep Analysis
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Info Card 2 -->
+        <div class="col-lg-4 animate-up" style="animation-delay: 0.3s">
+            <div class="glass-card p-4 h-100">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="icon-box bg-primary bg-opacity-10 p-3 rounded-4 me-3">
+                        <i class="bi bi-shield-check text-primary fs-3"></i>
+                    </div>
+                    <h5 class="mb-0">Best Practices</h5>
+                </div>
+                <ul class="text-white-50 small ps-0 list-unstyled">
+                    <li class="mb-3 d-flex align-items-start gap-2">
+                        <i class="bi bi-lightning-charge text-accent mt-1"></i>
+                        <span>Ensure the leaf is in clear focus and well-lit.</span>
+                    </li>
+                    <li class="mb-3 d-flex align-items-start gap-2">
+                        <i class="bi bi-lightning-charge text-accent mt-1"></i>
+                        <span>Upload a top-down view for better feature extraction.</span>
+                    </li>
+                    <li class="mb-3 d-flex align-items-start gap-2">
+                        <i class="bi bi-lightning-charge text-accent mt-1"></i>
+                        <span>Include both infected and healthy parts if possible.</span>
+                    </li>
+                </ul>
+                <div class="mt-auto pt-4 border-top border-secondary border-opacity-10">
+                    <a target="_blank" href="https://www.thespruce.com/prevent-plant-diseases-in-your-garden-2539511" class="text-primary-light text-decoration-none fw-bold small d-flex align-items-center justify-content-between">
+                        Full Prevention Guide <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const actualBtn = document.getElementById('actual-btn');
+    const fileChosen = document.getElementById('file-chosen');
+
+    actualBtn.addEventListener('change', function () {
+        if (this.files && this.files[0]) {
+            fileChosen.textContent = this.files[0].name;
+            fileChosen.style.color = '#34d399';
+            fileChosen.style.fontWeight = '600';
+        }
+    });
+</script>
+{% endblock body %}

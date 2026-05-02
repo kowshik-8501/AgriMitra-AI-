@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block pagetitle %}Supplement Market{% endblock pagetitle %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="text-center mb-5 animate-up">
+        <div class="badge-diagnosis mb-3">Marketplace</div>
+        <h1 class="display-4 text-gradient mb-3">Agricultural Supplements</h1>
+        <p class="text-white-50 lead mx-auto" style="max-width: 600px;">Find the best fertilizers and supplements tailored for your plants, curated for both healthy growth and disease recovery.</p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for index in range(0, supplement_name | length) %}
+        {% if index != 4 %}
+        <div class="col animate-up" style="animation-delay: {{ (index % 5) * 0.1 }}s;">
+            <div class="glass-card p-4 h-100 d-flex flex-column text-center">
+                <div class="mb-3">
+                    {% if index==3 or index==5 or index==7 or index==11 or index==15 or index==18 or index==20 or
+                    index==23 or index==24 or index==25 or index==28 or index==38 %}
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill">
+                        <i class="bi bi-heart-fill me-1"></i> Fertilizer (Healthy)
+                    </span>
+                    {% else %}
+                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-2 rounded-pill">
+                        <i class="bi bi-shield-plus me-1"></i> Supplement (Diseased)
+                    </span>
+                    {% endif %}
+                </div>
+
+                <div class="product-image-wrapper mb-4 p-3 bg-white bg-opacity-5 rounded-4 border border-white border-opacity-10">
+                    <img src="{{supplement_image[index]}}" alt="{{supplement_name[index]}}" class="img-fluid rounded-3" style="height: 200px; object-fit: contain;">
+                </div>
+
+                <h5 class="text-white fw-bold mb-2">{{supplement_name[index]}}</h5>
+                <p class="text-white-50 small mb-4 flex-grow-1">Optimized for <span class="text-primary-light fw-bold">{{disease[index]}}</span></p>
+
+                <div class="mt-auto">
+                    <a target="_blank" href="{{buy[index]}}" class="btn btn-primary-custom w-100 py-3">
+                        <i class="bi bi-cart-plus-fill me-2"></i> Buy Product
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .product-image-wrapper {
+        transition: transform 0.3s ease;
+    }
+    .glass-card:hover .product-image-wrapper {
+        transform: scale(1.05);
+        background: rgba(255, 255, 255, 0.1);
+    }
+</style>
+{% endblock body %}

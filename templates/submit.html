@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block pagetitle %}Diagnosis Result{% endblock pagetitle %}
+
+{% block body %}
+<div class="container py-5 result-container">
+    <!-- Header -->
+    <div class="result-header animate-up">
+        <div class="badge-diagnosis mb-3">AI Deep Analysis Complete</div>
+        <h1 class="display-4 text-gradient mb-3" id="diseaseTitle">{{title}}</h1>
+        
+        {% if lang_note %}
+        <div class="glass-card d-inline-block px-4 py-2 rounded-pill mb-4 border-primary border-opacity-25">
+            <i class="bi bi-translate text-primary-light me-2"></i> <span id="transTitle" class="fw-bold">{{ lang_note }}</span>
+        </div>
+        {% endif %}
+
+        <div class="mb-5">
+            {% if audio_file %}
+            <button onclick="playAudio()" class="btn btn-primary-custom rounded-pill px-5 py-3 shadow-lg" id="speakBtn">
+                <i class="bi bi-play-circle-fill me-2 fs-5"></i> Listen to AI Report
+            </button>
+            <audio id="reportAudio" src="{{ url_for('static', filename='audio/' + audio_file) }}"></audio>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function playAudio() {
+            const audio = document.getElementById('reportAudio');
+            const btn = document.getElementById('speakBtn');
+            
+            if (audio.paused) {
+                audio.play();
+                btn.innerHTML = '<i class="bi bi-pause-circle-fill me-2"></i> 🔊 Stop Report';
+                btn.classList.replace('btn-primary-custom', 'btn-danger');
+            } else {
+                audio.pause();
+                audio.currentTime = 0;
+                btn.innerHTML = '<i class="bi bi-play-circle-fill me-2"></i> 🔊 Listen to AI Report';
+                btn.classList.replace('btn-danger', 'btn-primary-custom');
+            }
+            
+            audio.onended = () => {
+                btn.innerHTML = '<i class="bi bi-play-circle-fill me-2"></i> 🔊 Listen to AI Report';
+                btn.classList.replace('btn-danger', 'btn-primary-custom');
+            };
+        }
+    </script>
+
+    <!-- Image Wrapper -->
+    <div class="result-image-wrapper animate-up" style="animation-delay: 0.1s">
+        <img src="{{image_url}}" alt="{{title}}" class="img-fluid">
+    </div>
+
+    <!-- Results Grid -->
+    <div class="row g-4 mb-5">
+        <!-- Description Block -->
+        <div class="col-lg-12 animate-up" style="animation-delay: 0.2s">
+            <div class="glass-card p-5">
+                <h3 class="mb-4">
+                    <i class="bi bi-card-text text-success me-2"></i>
+                    {% if pred in [3, 5, 7, 11, 15, 18, 20, 23, 24, 25, 28, 38] %}
+                    Tips for Healthy Growth
+                    {% else %}
+                    Diagnosis Details
+                    {% endif %}
+                </h3>
+                <div class="lh-lg text-white-50" id="diagnosisDetails">
+                    {{desc | safe}}
+                </div>
+            </div>
+        </div>
+
+        <!-- Prevention Block -->
+        <div class="col-lg-6 animate-up" style="animation-delay: 0.3s">
+            <div class="glass-card p-5 h-100">
+                <h3 class="mb-4">
+                    <i class="bi bi-shield-check text-success me-2"></i>
+                    {% if pred in [3, 5, 7, 11, 15, 18, 20, 23, 24, 25, 28, 38] %}
+                    Key Benefits
+                    {% else %}
+                    Prevention & Treatment
+                    {% endif %}
+                </h3>
+                <div class="lh-lg text-white-50" id="preventionDetails">
+                    {{prevent | safe}}
+                </div>
+            </div>
+        </div>
+
+        <!-- Supplement/Fertilizer Block -->
+        {% if pred != 4 %}
+        <div class="col-lg-6 animate-up" style="animation-delay: 0.4s">
+            <div class="glass-card p-5 h-100 text-center">
+                <h3 class="mb-4">
+                    <i class="bi bi-basket-fill text-success me-2"></i>
+                    {% if pred in [3, 5, 7, 11, 15, 18, 20, 23, 24, 25, 28, 38] %}
+                    Recommended Fertilizer
+                    {% else %}
+                    Recommended Supplement
+                    {% endif %}
+                </h3>
+                <div class="mb-4 rounded-4 overflow-hidden shadow-sm" style="max-width: 250px; margin: 0 auto;">
+                    <img src="{{simage}}" alt="{{sname}}" class="img-fluid">
+                </div>
+                <h5 class="mb-3">{{sname}}</h5>
+                <a target="_blank" href="{{buy_link}}" class="btn btn-primary-custom px-5">
+                    <i class="bi bi-cart-fill me-2"></i> Buy Product
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Actions -->
+    <div class="text-center animate-up" style="animation-delay: 0.5s">
+        <a href="/index" class="btn btn-outline-custom btn-lg px-5">
+            <i class="bi bi-arrow-repeat me-2"></i> Run Another Diagnosis
+        </a>
+    </div>
+</div>
+{% endblock body %}
