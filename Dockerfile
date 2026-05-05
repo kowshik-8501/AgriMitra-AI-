@@ -22,6 +22,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project
 COPY . .
 
+# Create necessary directories and set permissions for Hugging Face (User 1000)
+RUN mkdir -p static/uploads static/audio && \
+    chmod -R 777 static/uploads static/audio
+
 # Expose the port the app runs on
 EXPOSE 7860
 

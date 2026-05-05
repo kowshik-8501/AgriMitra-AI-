@@ -15,4 +15,5 @@ itsdangerous
 python-dateutil
 pytz
 six
+scikit-learn
 typing-extensions
