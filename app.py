@@ -51,7 +51,7 @@ model.load_state_dict(torch.load(os.path.join(BASE_DIR, "plant_disease_model_1_l
 model.eval()
 
 def prediction(image_path):
-    image = Image.open(image_path)
+    image = Image.open(image_path).convert('RGB')
     image = image.resize((224, 224))
     input_data = TF.to_tensor(image)
     input_data = input_data.view((-1, 3, 224, 224))
