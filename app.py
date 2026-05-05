@@ -73,38 +73,44 @@ def ai_engine_page():
 @app.route('/submit', methods=['GET', 'POST'])
 def submit():
     if request.method == 'POST':
-        image = request.files['image']
-        filename = image.filename
-        file_path = os.path.join(UPLOAD_FOLDER, filename)
-        image.save(file_path)
-        
-        pred = prediction(file_path)
-        pred = int(pred)
-        if pred >= len(disease_info):
-            pred = 0
+        try:
+            image = request.files['image']
+            filename = image.filename
+            file_path = os.path.join(UPLOAD_FOLDER, filename)
+            image.save(file_path)
             
-        title = disease_info['disease_name'][pred]
-        description = disease_info['description'][pred]
-        prevent = disease_info['Possible Steps'][pred]
-        image_url = disease_info['image_url'][pred]
-        supplement_name = supplement_info['supplement name'][pred]
-        supplement_image_url = supplement_info['supplement image'][pred]
-        supplement_buy_link = supplement_info['buy link'][pred]
-        
-        lang = request.form.get('language', 'en')
-        lang_note = translate_text(title, lang) if lang != 'en' else None
-        
-        # Full Translation for display
-        display_desc = translate_text(description, lang) if lang != 'en' else description
-        display_prevent = translate_text(prevent, lang) if lang != 'en' else prevent
-        
-        # Audio Generation (AI Telugu Voice / Native Voice)
-        audio_text = f"Diagnosis result: {lang_note if lang_note else title}. Details: {display_desc}. Prevention: {display_prevent}."
-        audio_file = create_audio(audio_text, lang)
+            pred = prediction(file_path)
+            pred = int(pred)
+            if pred >= len(disease_info):
+                pred = 0
+                
+            title = disease_info['disease_name'][pred]
+            description = disease_info['description'][pred]
+            prevent = disease_info['Possible Steps'][pred]
+            image_url = disease_info['image_url'][pred]
+            supplement_name = supplement_info['supplement name'][pred]
+            supplement_image_url = supplement_info['supplement image'][pred]
+            supplement_buy_link = supplement_info['buy link'][pred]
+            
+            lang = request.form.get('language', 'en')
+            lang_note = translate_text(title, lang) if lang != 'en' else None
+            
+            # Full Translation for display
+            display_desc = translate_text(description, lang) if lang != 'en' else description
+            display_prevent = translate_text(prevent, lang) if lang != 'en' else prevent
+            
+            # Audio Generation (AI Telugu Voice / Native Voice)
+            audio_text = f"Diagnosis result: {lang_note if lang_note else title}. Details: {display_desc}. Prevention: {display_prevent}."
+            audio_file = create_audio(audio_text, lang)
 
-        return render_template('submit.html', title=title, desc=display_desc, prevent=display_prevent,
-                               image_url=image_url, pred=pred, sname=supplement_name, simage=supplement_image_url, buy_link=supplement_buy_link,
-                               selected_lang=lang, lang_note=lang_note, audio_file=audio_file)
+            return render_template('submit.html', title=title, desc=display_desc, prevent=display_prevent,
+                                   image_url=image_url, pred=pred, sname=supplement_name, simage=supplement_image_url, buy_link=supplement_buy_link,
+                                   selected_lang=lang, lang_note=lang_note, audio_file=audio_file)
+        except Exception as e:
+            import traceback
+            print("Error during submission:")
+            traceback.print_exc()
+            return f"An error occurred: {str(e)}. Please check the server logs for details.", 500
 
 @app.route('/market', methods=['GET', 'POST'])
 def market():
