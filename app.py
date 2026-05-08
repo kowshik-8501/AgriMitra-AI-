@@ -1,6 +1,6 @@
 import os
 import uuid
-from flask import Flask, render_template, request, url_for
+from flask import Flask, render_template, request, url_for, send_file
 from PIL import Image
 import torchvision.transforms.functional as TF
 import CNN
@@ -120,6 +120,10 @@ def market():
 @app.route('/contact')
 def contact_page():
     return render_template('contact-us.html')
+
+@app.route('/documentation')
+def documentation():
+    return send_file(os.path.join(BASE_DIR, 'LICENSE'), mimetype='text/plain')
 
 import pickle
 
