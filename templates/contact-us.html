@@ -1,13 +1,23 @@
 {% extends 'base.html' %}
 
 {% block pagetitle %}Contact Us{% endblock pagetitle %}
+ 
+{% block extra_head %}
+<style>
+    body::before {
+        background-image: url("{{ url_for('static', filename='images/contact_bg.jpg') }}") !important;
+        opacity: 0.3 !important;
+        filter: brightness(0.9) contrast(1.1) !important;
+    }
+</style>
+{% endblock %}
 
 {% block body %}
 <div class="container py-5">
     <div class="text-center mb-5 animate-up">
         <div class="badge-diagnosis mb-3">Get in Touch</div>
         <h1 class="display-4 text-gradient mb-3">Connect With Us</h1>
-        <p class="text-white-50 lead mx-auto" style="max-width: 600px;">Have questions or feedback? Reach out to the visionary behind LeafDoc AI.</p>
+        <p class="text-white-50 lead mx-auto" style="max-width: 600px;">Have questions or feedback? Reach out to the visionary behind Crop Care AI.</p>
     </div>
 
     <div class="row g-4 justify-content-center">
@@ -18,11 +28,11 @@
                     <div class="avatar-bg mx-auto mb-3">
                         <i class="bi bi-person-circle text-primary-light display-3"></i>
                     </div>
-                    <h2 class="h3 fw-bold text-white mb-1">Remalla Ratnakowshik</h2>
+                    <h2 class="h3 fw-bold text-white mb-1">Remalla Ratna kowshik</h2>
                     <p class="text-neon-emerald small fw-bold mb-4">Veltech Student | AI & Systems Developer</p>
                 </div>
                 <p class="text-white-50 mb-5">
-                    A dedicated developer focused on leveraging Artificial Intelligence to solve real-world agricultural challenges. Passionate about Deep Learning and building scalable, sustainable farming technologies.
+                    A dedicated developer focused on leveraging Artificial Intelligence to solve real-world agricultural challenges. Passionate about Deep Learning and building scalable, sustainable farming technologies with Crop Care AI.
                 </p>
                 
                 <div class="contact-details mb-5">

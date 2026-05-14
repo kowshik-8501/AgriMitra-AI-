@@ -18,3 +18,5 @@ pytz
 six
 scikit-learn
 typing-extensions
+requests
+joblib

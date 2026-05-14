@@ -1,5 +1,15 @@
 {% extends 'base.html' %}
 {% block pagetitle %}Supplement Market{% endblock pagetitle %}
+ 
+{% block extra_head %}
+<style>
+    body::before {
+        background-image: url("{{ url_for('static', filename='images/shop_bg.jpg') }}") !important;
+        opacity: 0.3 !important;
+        filter: brightness(0.9) contrast(1.1) !important;
+    }
+</style>
+{% endblock %}
 
 {% block body %}
 <div class="container py-5">

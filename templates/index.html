@@ -1,6 +1,16 @@
 {% extends 'base.html' %}
 
 {% block pagetitle %}AI Engine{% endblock pagetitle %}
+ 
+{% block extra_head %}
+<style>
+    body::before {
+        background-image: url("{{ url_for('static', filename='images/doctor.jpg') }}") !important;
+        opacity: 0.3 !important;
+        filter: brightness(1.0) contrast(1.1) !important;
+    }
+</style>
+{% endblock %}
 
 {% block body %}
 <div class="container py-5">
@@ -42,12 +52,14 @@
                     
                     <div class="mb-4">
                         <label class="form-label text-primary-light fw-bold small">Analysis Language</label>
-                        <select name="language" class="form-select glass-input-small w-100">
+                        <select name="language" class="form-select glass-input-neon w-100">
                             <option value="en">English (Default)</option>
                             <option value="te">Telugu (తెలుగు)</option>
                             <option value="ta">Tamil (தமிழ்)</option>
-                            <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                            <option value="ml">Malayalam (മലയാളം)</option>
                             <option value="hi">Hindi (हिन्दी)</option>
+                            <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                            <option value="or">Odia (ଓଡ଼ିଆ)</option>
                         </select>
                     </div>
                     <button type="submit" class="btn btn-primary-custom w-100 py-3 d-flex align-items-center justify-content-center gap-2">

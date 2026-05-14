@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block pagetitle %}Plant Disease Encyclopedia{% endblock pagetitle %}
+ 
+{% block extra_head %}
+<style>
+    body::before {
+        background-image: url("{{ url_for('static', filename='images/library_bg.jpg') }}") !important;
+        opacity: 0.3 !important;
+        filter: brightness(0.9) contrast(1.1) !important;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="text-center mb-5 animate-up">
+        <div class="badge-diagnosis mb-3">Knowledge Base</div>
+        <h1 class="display-4 text-gradient mb-2">Disease Encyclopedia</h1>
+        <p class="text-white-50">Browse our comprehensive database of 38+ plant diseases and their treatments</p>
+    </div>
+
+    <div class="row mb-5 animate-up">
+        <div class="col-md-6 mx-auto">
+            <div class="input-group">
+                <span class="input-group-text glass-input border-end-0" style="color: #00d2ff !important;"><i class="bi bi-search"></i></span>
+                <input type="text" id="diseaseSearch" class="form-control glass-input border-start-0" placeholder="Search for a plant or disease (e.g. Tomato, Blast)...">
+            </div>
+        </div>
+    </div>
+
+    <div class="card-grid" id="diseaseGrid">
+        {% for d in diseases %}
+        <div class="glass-card plant-card p-3 animate-up disease-item" data-name="{{ d.disease_name }}">
+            <img src="{{ d.image_url }}" alt="{{ d.disease_name }}" onerror="this.src='https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&q=80&w=600'">
+            <h4 class="mb-3">{{ d.disease_name }}</h4>
+            <button class="btn btn-outline-custom btn-sm w-100" onclick="showDetails({{ d.index }})">View Details</button>
+            
+            <!-- Hidden details for Modal -->
+            <div id="desc-{{ d.index }}" class="d-none">{{ d.description }}</div>
+            <div id="steps-{{ d.index }}" class="d-none">{{ d['Possible Steps'] }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content glass-card p-4">
+            <div class="modal-header border-0">
+                <h3 class="modal-title text-success" id="modalTitle"></h3>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-4">
+                    <h5 class="text-white">Description</h5>
+                    <p id="modalDesc" class="text-white-50"></p>
+                </div>
+                <div>
+                    <h5 class="text-white">Recommended Actions</h5>
+                    <div id="modalSteps" class="text-white-50"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showDetails(index) {
+        const name = document.querySelector(`[onclick="showDetails(${index})"]`).parentElement.querySelector('h4').innerText;
+        const desc = document.getElementById(`desc-${index}`).innerText;
+        const steps = document.getElementById(`steps-${index}`).innerText;
+        
+        document.getElementById('modalTitle').innerText = name;
+        document.getElementById('modalDesc').innerText = desc;
+        document.getElementById('modalSteps').innerHTML = steps.split('\n').map(s => `<div class="mb-2"><i class="bi bi-dot text-success me-2"></i>${s}</div>`).join('');
+        
+        const modal = new bootstrap.Modal(document.getElementById('detailModal'));
+        modal.show();
+    }
+
+    document.getElementById('diseaseSearch').addEventListener('input', function(e) {
+        const term = e.target.value.toLowerCase();
+        document.querySelectorAll('.disease-item').forEach(item => {
+            const name = item.getAttribute('data-name').toLowerCase();
+            if (name.includes(term)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+</script>
+
+<style>
+    .glass-input {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: #00d2ff !important; /* Neon Blue Text */
+        text-shadow: 0 0 8px rgba(0, 210, 255, 0.4);
+        border-radius: 12px;
+        padding: 12px 20px;
+        transition: all 0.3s ease;
+    }
+    .glass-input:focus {
+        background: rgba(255, 255, 255, 0.1) !important;
+        border-color: #00d2ff !important;
+        box-shadow: 0 0 20px rgba(0, 210, 255, 0.3) !important;
+        outline: none;
+        color: #00d2ff !important;
+    }
+    .glass-input::placeholder {
+        color: rgba(0, 210, 255, 0.5) !important;
+    }
+    .modal-content {
+        background: rgba(2, 6, 23, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+</style>
+{% endblock body %}

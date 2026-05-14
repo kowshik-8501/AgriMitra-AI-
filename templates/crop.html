@@ -1,6 +1,16 @@
 {% extends 'base.html' %}
 
 {% block pagetitle %}Crop Recommendation{% endblock pagetitle %}
+ 
+{% block extra_head %}
+<style>
+    body::before {
+        background-image: url("{{ url_for('static', filename='images/crop_bg.jpg') }}") !important;
+        opacity: 0.3 !important;
+        filter: brightness(1.0) contrast(1.1) !important;
+    }
+</style>
+{% endblock %}
 
 {% block body %}
 <div class="container py-5">
@@ -10,54 +20,64 @@
                 <div class="text-center mb-5">
                     <div class="badge-diagnosis mb-3">Environmental Intelligence</div>
                     <h1 class="display-4 text-gradient mb-2">Crop Recommendation AI</h1>
-                    <p class="text-white-50">Enter soil and environmental details to find the most profitable crop for your region</p>
+                    <p class="text-white-50">Enter soil and environmental details to find the most profitable crop for
+                        your region</p>
                 </div>
 
                 <form action="/crop" method="POST" class="row g-4">
                     <!-- Language Selection -->
                     <div class="col-12 mb-3">
                         <label class="form-label text-success fw-bold">Select Language</label>
-                        <select name="language" class="form-select glass-input">
+                        <select name="language" class="form-select glass-input-neon">
                             <option value="en">English</option>
                             <option value="te">Telugu (తెలుగు)</option>
                             <option value="ta">Tamil (தமிழ்)</option>
-                            <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                            <option value="ml">Malayalam (മലയാളം)</option>
                             <option value="hi">Hindi (हिन्दी)</option>
+                            <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                            <option value="or">Odia (ଓଡ଼ିଆ)</option>
                         </select>
                     </div>
 
                     <!-- N-P-K -->
                     <div class="col-md-4">
                         <label class="form-label fw-bold">Nitrogen (N)</label>
-                        <input type="number" name="nitrogen" class="form-control glass-input" placeholder="e.g. 90" required>
+                        <input type="number" name="nitrogen" class="form-control glass-input" placeholder="e.g. 90"
+                            required>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label fw-bold">Phosphorus (P)</label>
-                        <input type="number" name="phosphorus" class="form-control glass-input" placeholder="e.g. 42" required>
+                        <input type="number" name="phosphorus" class="form-control glass-input" placeholder="e.g. 42"
+                            required>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label fw-bold">Potassium (K)</label>
-                        <input type="number" name="potassium" class="form-control glass-input" placeholder="e.g. 43" required>
+                        <input type="number" name="potassium" class="form-control glass-input" placeholder="e.g. 43"
+                            required>
                     </div>
 
                     <!-- Temperature & Humidity -->
                     <div class="col-md-6">
                         <label class="form-label fw-bold">Temperature (°C)</label>
-                        <input type="number" step="0.01" name="temperature" class="form-control glass-input" placeholder="e.g. 20.8" required>
+                        <input type="number" step="0.01" name="temperature" class="form-control glass-input"
+                            placeholder="e.g. 20.8" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-bold">Humidity (%)</label>
-                        <input type="number" step="0.01" name="humidity" class="form-control glass-input" placeholder="e.g. 82.0" required>
+                        <input type="number" step="0.01" name="humidity" class="form-control glass-input"
+                            placeholder="e.g. 82.0" required>
                     </div>
 
                     <!-- pH & Rainfall -->
                     <div class="col-md-6">
                         <label class="form-label fw-bold">Soil pH</label>
-                        <input type="number" step="0.01" name="ph" class="form-control glass-input" placeholder="e.g. 6.5" required>
+                        <input type="number" step="0.01" name="ph" class="form-control glass-input"
+                            placeholder="e.g. 6.5" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-bold">Rainfall (mm)</label>
-                        <input type="number" step="0.01" name="rainfall" class="form-control glass-input" placeholder="e.g. 202.9" required>
+                        <input type="number" step="0.01" name="rainfall" class="form-control glass-input"
+                            placeholder="e.g. 202.9" required>
                     </div>
 
                     <div class="col-12 mt-5 text-center">
@@ -73,12 +93,14 @@
                 <div class="glass-card p-5 border-success text-center result-box">
                     <h2 class="text-success mb-4">Recommendation Result</h2>
                     <div class="display-4 fw-bold mb-3" id="cropResult">{{ crop }}</div>
-                    <p class="lead text-white-50">This crop is optimally suited for your soil and weather conditions.</p>
-                    
+                    <p class="lead text-white-50">This crop is optimally suited for your soil and weather conditions.
+                    </p>
+
                     {% if language_note %}
                     <div class="mt-4 p-4 glass-card border-primary border-opacity-10 text-center">
                         <i class="bi bi-translate text-primary-light me-2"></i>
-                        <strong class="text-white">Local Translation:</strong> <span id="transResult" class="text-primary-light fw-bold">{{ language_note }}</span>
+                        <strong class="text-white">Local Translation:</strong> <span id="transResult"
+                            class="text-primary-light fw-bold">{{ language_note }}</span>
                     </div>
                     {% endif %}
 
@@ -98,10 +120,11 @@
 
                     <div class="mt-5">
                         {% if audio_file %}
-                        <button onclick="playCropAudio()" class="btn btn-primary-custom rounded-pill px-5 py-3" id="cropAudioBtn">
+                        <button onclick="playCropAudio()" class="btn btn-primary-custom rounded-pill px-5 py-3"
+                            id="cropAudioBtn">
                             <i class="bi bi-play-circle-fill me-2 fs-5"></i> Listen to AI Result
                         </button>
-                        <audio id="cropAudio" src="{{ url_for('static', filename='audio/' + audio_file) }}"></audio>
+                        <audio id="cropAudio" src="{{ url_for('static', filename='audio/' + audio_file) }}" type="audio/mpeg" preload="auto"></audio>
                         {% endif %}
                     </div>
                 </div>
@@ -115,21 +138,36 @@
     function playCropAudio() {
         const audio = document.getElementById('cropAudio');
         const btn = document.getElementById('cropAudioBtn');
-        
+
+        if (!audio) return;
+
+        audio.onerror = function() {
+            alert("Sorry, there was an error loading the audio. Please check your internet connection.");
+            btn.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i> Audio Error';
+            btn.classList.add('btn-warning');
+            btn.classList.remove('btn-primary-custom');
+        };
+
         if (audio.paused) {
-            audio.play();
-            btn.innerHTML = '<i class="bi bi-pause-circle-fill me-2"></i> 🔊 Stop Result';
-            btn.classList.replace('btn-outline-success', 'btn-danger');
+            audio.play().catch(e => {
+                console.error("Playback failed:", e);
+                alert("Audio playback failed. Your browser might be blocking auto-play or the file is missing.");
+            });
+            btn.innerHTML = '<i class="bi bi-pause-circle-fill me-2"></i> Stop Result';
+            btn.classList.add('btn-danger');
+            btn.classList.remove('btn-primary-custom');
         } else {
             audio.pause();
             audio.currentTime = 0;
-            btn.innerHTML = '<i class="bi bi-play-circle-fill me-2"></i> 🔊 Listen to AI Result';
-            btn.classList.replace('btn-danger', 'btn-outline-success');
+            btn.innerHTML = '<i class="bi bi-play-circle-fill me-2"></i> Listen to AI Result';
+            btn.classList.add('btn-primary-custom');
+            btn.classList.remove('btn-danger');
         }
-        
+
         audio.onended = () => {
-            btn.innerHTML = '<i class="bi bi-play-circle-fill me-2"></i> 🔊 Listen to AI Result';
-            btn.classList.replace('btn-danger', 'btn-outline-success');
+            btn.innerHTML = '<i class="bi bi-play-circle-fill me-2"></i> Listen to AI Result';
+            btn.classList.add('btn-primary-custom');
+            btn.classList.remove('btn-danger');
         };
     }
 </script>

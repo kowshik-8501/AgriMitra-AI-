@@ -20,7 +20,7 @@
             <button onclick="playAudio()" class="btn btn-primary-custom rounded-pill px-5 py-3 shadow-lg" id="speakBtn">
                 <i class="bi bi-play-circle-fill me-2 fs-5"></i> Listen to AI Report
             </button>
-            <audio id="reportAudio" src="{{ url_for('static', filename='audio/' + audio_file) }}"></audio>
+            <audio id="reportAudio" src="{{ url_for('static', filename='audio/' + audio_file) }}" type="audio/mpeg" preload="auto"></audio>
             {% endif %}
         </div>
     </div>
@@ -30,20 +30,35 @@
             const audio = document.getElementById('reportAudio');
             const btn = document.getElementById('speakBtn');
             
+            if (!audio) return;
+
+            audio.onerror = function() {
+                alert("Sorry, there was an error loading the audio. Please check your internet connection.");
+                btn.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i> Audio Error';
+                btn.classList.add('btn-warning');
+                btn.classList.remove('btn-primary-custom');
+            };
+            
             if (audio.paused) {
-                audio.play();
-                btn.innerHTML = '<i class="bi bi-pause-circle-fill me-2"></i> 🔊 Stop Report';
-                btn.classList.replace('btn-primary-custom', 'btn-danger');
+                audio.play().catch(e => {
+                    console.error("Playback failed:", e);
+                    alert("Audio playback failed. Your browser might be blocking auto-play or the file is missing.");
+                });
+                btn.innerHTML = '<i class="bi bi-pause-circle-fill me-2"></i> Stop Report';
+                btn.classList.add('btn-danger');
+                btn.classList.remove('btn-primary-custom');
             } else {
                 audio.pause();
                 audio.currentTime = 0;
-                btn.innerHTML = '<i class="bi bi-play-circle-fill me-2"></i> 🔊 Listen to AI Report';
-                btn.classList.replace('btn-danger', 'btn-primary-custom');
+                btn.innerHTML = '<i class="bi bi-play-circle-fill me-2"></i> Listen to AI Report';
+                btn.classList.add('btn-primary-custom');
+                btn.classList.remove('btn-danger');
             }
             
             audio.onended = () => {
-                btn.innerHTML = '<i class="bi bi-play-circle-fill me-2"></i> 🔊 Listen to AI Report';
-                btn.classList.replace('btn-danger', 'btn-primary-custom');
+                btn.innerHTML = '<i class="bi bi-play-circle-fill me-2"></i> Listen to AI Report';
+                btn.classList.add('btn-primary-custom');
+                btn.classList.remove('btn-danger');
             };
         }
     </script>

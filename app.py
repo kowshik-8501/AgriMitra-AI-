@@ -1,19 +1,31 @@
 import os
 import uuid
-from flask import Flask, render_template, request, url_for, send_file
+import requests
+# pyrefly: ignore [missing-import]
+from flask import Flask, render_template, request, url_for, send_file, jsonify
+# pyrefly: ignore [missing-import]
 from PIL import Image
+# pyrefly: ignore [missing-import]
 import torchvision.transforms.functional as TF
 import CNN
+# pyrefly: ignore [missing-import]
 import numpy as np
+# pyrefly: ignore [missing-import]
 import torch
 import pandas as pd
+# pyrefly: ignore [missing-import]
 from deep_translator import GoogleTranslator
+import time
 from gtts import gTTS
+import joblib
 
 def translate_text(text, target_lang):
     try:
         if not text or target_lang == 'en': return text
-        lang_map = {'hi': 'hi', 'te': 'te', 'ta': 'ta', 'kn': 'kn'}
+        lang_map = {
+            'hi': 'hi', 'te': 'te', 'ta': 'ta', 'kn': 'kn', 
+            'ml': 'ml', 'or': 'or'
+        }
         target = lang_map.get(target_lang, 'hi')
         translated = GoogleTranslator(source='auto', target=target).translate(text)
         return translated
@@ -21,17 +33,59 @@ def translate_text(text, target_lang):
         print(f"Translation error: {e}")
         return text
 
+def sanitize_text(text):
+    """Clean text for gTTS: remove HTML tags and extra whitespace."""
+    if not text:
+        return ""
+    import re
+    # Remove HTML tags
+    text = re.sub(r'<[^>]*>', '', text)
+    # Normalize whitespace
+    text = " ".join(text.split())
+    return text
+
+def cleanup_old_audio(folder, max_age_seconds=3600):
+    """Remove audio files older than max_age_seconds."""
+    try:
+        now = time.time()
+        for f in os.listdir(folder):
+            filepath = os.path.join(folder, f)
+            if os.path.isfile(filepath) and f.endswith('.mp3'):
+                if now - os.path.getmtime(filepath) > max_age_seconds:
+                    os.remove(filepath)
+    except Exception as e:
+        print(f"Cleanup error: {e}")
+
 def create_audio(text, lang_code):
     try:
-        lang_map = {'hi': 'hi', 'te': 'te', 'ta': 'ta', 'kn': 'kn', 'en': 'en'}
+        # Cleanup old files first
+        cleanup_old_audio(AUDIO_FOLDER)
+        
+        # Sanitize text
+        clean_text = sanitize_text(text)
+        if not clean_text:
+            return None
+            
+        lang_map = {
+            'hi': 'hi', 'te': 'te', 'ta': 'ta', 'kn': 'kn', 
+            'en': 'en', 'ml': 'ml', 'or': 'or'
+        }
         target = lang_map.get(lang_code, 'en')
-        tts = gTTS(text=text, lang=target)
+        
+        print(f"Generating audio for lang: {target}, text length: {len(clean_text)}")
+        
+        tts = gTTS(text=clean_text, lang=target)
         filename = f"speech_{uuid.uuid4().hex}.mp3"
         filepath = os.path.join(AUDIO_FOLDER, filename)
         tts.save(filepath)
-        return filename
+        
+        if os.path.exists(filepath):
+            return filename
+        return None
     except Exception as e:
         print(f"Audio creation error: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 # Ensure the uploads and audio directories exist
@@ -59,6 +113,89 @@ def prediction(image_path):
     output = output.detach().numpy()
     index = np.argmax(output)
     return index
+
+class YieldPredictor:
+    def __init__(self):
+        self.model_path = os.path.join(BASE_DIR, 'models', 'yield_model.pkl')
+        self.le_dist_path = os.path.join(BASE_DIR, 'models', 'le_district.pkl')
+        self.le_crop_path = os.path.join(BASE_DIR, 'models', 'le_crop.pkl')
+        self.data_dir = os.path.join(BASE_DIR, 'data')
+        self.load_artifacts()
+
+    def load_artifacts(self):
+        try:
+            self.model = joblib.load(self.model_path)
+            self.le_district = joblib.load(self.le_dist_path)
+            self.le_crop = joblib.load(self.le_crop_path)
+            self.history = pd.read_csv(os.path.join(self.data_dir, 'historical_yield.csv'))
+        except Exception as e:
+            print(f"Error loading AI artifacts: {e}")
+            self.model = None
+
+    def predict(self, input_data):
+        try:
+            crop = input_data.get('crop', 'Rice')
+            district = input_data.get('district', 'Guntur')
+            
+            try:
+                dist_enc = self.le_district.transform([district])[0]
+            except:
+                dist_enc = 0
+                
+            try:
+                crop_enc = self.le_crop.transform([crop])[0]
+            except:
+                crop_enc = 0
+
+            rain_val = float(input_data.get('rainfall', 1000))
+            temp_val = float(input_data.get('temp', 28))
+            
+            features = np.array([[
+                dist_enc, 
+                crop_enc, 
+                rain_val, 
+                temp_val,
+                float(input_data.get('n', 80)),
+                float(input_data.get('p', 40)),
+                float(input_data.get('k', 40))
+            ]])
+
+            if self.model:
+                prediction = self.model.predict(features)[0]
+            else:
+                prediction = 3.5
+                
+            hist_matches = self.history[self.history['District'].str.contains(district, case=False)]
+            base_val = float(hist_matches['Yield'].mean()) if not hist_matches.empty else float(prediction)
+            
+            trend = [float(base_val * (1 + np.random.uniform(-0.1, 0.1))) for _ in range(5)]
+            trend.append(float(round(prediction, 2)))
+            
+            return float(round(prediction, 2)), trend
+
+        except Exception as e:
+            print(f"Prediction logic error: {e}")
+            return 3.5, [3.0, 3.2, 3.1, 3.4, 3.3, 3.5]
+
+yield_predictor = YieldPredictor()
+
+
+
+class FertilizerAdvisor:
+    def recommend(self, n, p, k, crop):
+        targets = {
+            'Paddy': (100, 50, 50), 'Maize': (120, 60, 40), 'Wheat': (120, 60, 40),
+            'Sugarcane': (150, 80, 80), 'Cotton': (100, 50, 50), 'Rice': (100, 50, 50)
+        }
+        tn, tp, tk = targets.get(crop, (100, 50, 50))
+        recs = []
+        if n < tn - 15: recs.append("Apply Urea to increase Nitrogen levels.")
+        if p < tp - 10: recs.append("Apply DAP (Di-Ammonium Phosphate) for Phosphorus.")
+        if k < tk - 10: recs.append("Apply MOP (Muriate of Potash) for Potassium.")
+        if not recs: recs.append("Your soil NPK levels are optimal for this crop. Maintain organic matter.")
+        return recs
+
+fertilizer_advisor = FertilizerAdvisor()
 
 app = Flask(__name__)
 
@@ -258,6 +395,169 @@ def crop_page():
 
     return render_template('crop.html', crop=crop, crop_desc=crop_desc, crop_reason=crop_reason, 
                            language_note=language_note, audio_file=audio_file)
+
+
+
+@app.route('/yield', methods=['GET', 'POST'])
+def yield_prediction():
+    result = None
+    input_data = {}
+    trend_data = []
+    lang = 'en'
+    audio_file = None
+    trans_result = None
+    
+    if request.method == 'POST':
+        try:
+            lang = request.form.get('language', 'en')
+            input_data = {
+                'district': request.form.get('district', '').strip(),
+                'crop': request.form.get('crop'),
+                'n': float(request.form.get('n', 0)),
+                'p': float(request.form.get('p', 0)),
+                'k': float(request.form.get('k', 0)),
+                'temp': float(request.form.get('temp', 0)),
+                'rainfall': float(request.form.get('rainfall', 0))
+            }
+            
+            prediction, trend = yield_predictor.predict(input_data)
+            result = prediction
+            trend_data = trend
+            
+            # Regional Comparison Data
+            hist = yield_predictor.history
+            crop_matches = hist[hist['Crop'].str.contains(input_data['crop'], case=False)]
+            
+            if crop_matches.empty:
+                # Fallback to top districts overall
+                top_regions = hist.groupby('District')['Yield'].mean().sort_values(ascending=False).head(5)
+            else:
+                top_regions = crop_matches.groupby('District')['Yield'].mean().sort_values(ascending=False).head(5)
+                
+            regional_data = {
+                'labels': top_regions.index.tolist(),
+                'chart_values': [round(float(v), 2) for v in top_regions.values],
+                'current_district': input_data['district'],
+                'current_val': float(prediction)
+            }
+
+            # Analysis Text
+            if prediction > 4.5:
+                status = "Excellent"
+                advice = "Conditions are perfect. Consider early market booking."
+            elif prediction > 3.0:
+                status = "Good"
+                advice = "Standard maintenance will secure this harvest."
+            else:
+                status = "Average"
+                advice = "Review soil nutrients and irrigation frequency."
+
+            report_text = f"The predicted yield for {input_data['crop']} in {input_data['district']} is {prediction} tons per hectare. Status: {status}. {advice}"
+            trans_result = translate_text(report_text, lang)
+            audio_file = create_audio(trans_result, lang)
+            
+        except Exception as e:
+            print(f"Prediction Error: {e}")
+            result = "Error in calculation"
+
+    return render_template('yield.html', 
+                         result=result, 
+                         input_data=input_data, 
+                         trend=trend_data,
+                         regional_data=regional_data if 'regional_data' in locals() else None,
+                         lang=lang,
+                         trans_result=trans_result,
+                         audio_file=audio_file)
+
+
+@app.route('/fertilizer', methods=['GET', 'POST'])
+def fertilizer_recommendation():
+    recs = None
+    input_data = {}
+    lang = 'en'
+    audio_file = None
+    trans_recs = []
+    
+    if request.method == 'POST':
+        try:
+            lang = request.form.get('language', 'en')
+            n = float(request.form.get('n', 0))
+            p = float(request.form.get('p', 0))
+            k = float(request.form.get('k', 0))
+            crop = request.form.get('crop', 'Paddy')
+            input_data = {'n': n, 'p': p, 'k': k, 'crop': crop}
+            recs = fertilizer_advisor.recommend(n, p, k, crop)
+            
+            # Translation and Audio
+            if lang != 'en':
+                trans_recs = [translate_text(r, lang) for r in recs]
+                audio_text = ". ".join(trans_recs)
+            else:
+                audio_text = ". ".join(recs)
+            
+            audio_file = create_audio(audio_text, lang)
+            
+        except Exception as e:
+            print(f"Error in fertilizer rec: {e}")
+            recs = ["Error processing request"]
+            
+    crops = ['Paddy', 'Maize', 'Sugarcane', 'Cotton', 'Wheat', 'Rice']
+    return render_template('fertilizer.html', recs=recs, data=input_data, crops=crops, 
+                           selected_lang=lang, trans_recs=trans_recs, audio_file=audio_file)
+
+@app.route('/explore')
+def explore():
+    diseases = disease_info.to_dict(orient='records')
+    return render_template('explore.html', diseases=diseases)
+
+@app.route('/api/detect-location', methods=['POST'])
+def detect_location():
+    try:
+        data = request.get_json()
+        lat = data.get('lat')
+        lon = data.get('lon')
+        url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}&zoom=10"
+        headers = {'User-Agent': 'CropCareAI/1.0'}
+        response = requests.get(url, headers=headers).json()
+        addr = response.get('address', {})
+        state = addr.get('state', '').lower()
+        
+        mapping = {
+            'andhra pradesh': 'te', 'telangana': 'te', 'tamil nadu': 'ta',
+            'kerala': 'ml', 'karnataka': 'kn', 'odisha': 'or',
+            'uttar pradesh': 'hi', 'bihar': 'hi', 'madhya pradesh': 'hi',
+            'rajasthan': 'hi', 'haryana': 'hi', 'himachal pradesh': 'hi',
+            'delhi': 'hi', 'gujarat': 'hi', 'maharashtra': 'hi'
+        }
+        
+        return jsonify({'lang': mapping.get(state, 'en'), 'state': state.title()})
+    except Exception as e:
+        return jsonify({'lang': 'en', 'error': str(e)})
+
+@app.route('/api/translate-info', methods=['POST'])
+def translate_info():
+    try:
+        data = request.get_json()
+        text = data.get('text')
+        lang = data.get('lang', 'en')
+        translated = translate_text(text, lang)
+        return jsonify({'translated': translated})
+    except Exception as e:
+        return jsonify({'translated': text, 'error': str(e)})
+
+@app.route('/api/get-audio-info', methods=['POST'])
+def get_audio_info():
+    try:
+        data = request.get_json()
+        text = data.get('text')
+        lang = data.get('lang', 'en')
+        filename = create_audio(text, lang)
+        if filename:
+            return jsonify({'audio_url': url_for('static', filename='audio/' + filename)})
+        return jsonify({'error': 'Failed to create audio'})
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,0 +1,351 @@
+{% extends 'base.html' %}
+
+{% block pagetitle %}Harvest Predictor - JacobAi{% endblock pagetitle %}
+
+{% block extra_head %}
+<style>
+    body::before {
+        background-image: url("{{ url_for('static', filename='images/yield_bg.jpg') }}") !important;
+        opacity: 0.35 !important;
+        filter: brightness(1.0) contrast(1.1) !important;
+    }
+    .yield-container {
+        padding: 40px 0;
+    }
+    .result-section {
+        background: rgba(16, 185, 129, 0.05);
+        border: 1px solid var(--primary-light);
+        border-radius: 20px;
+    }
+    canvas {
+        max-height: 300px;
+    }
+</style>
+{% endblock extra_head %}
+
+{% block body %}
+<div class="container yield-container">
+    <div class="row g-5">
+        <!-- Input Form -->
+        <div class="col-lg-5 animate-up">
+            <div class="glass-card p-5 h-100">
+                <h2 class="mb-4 text-gradient fw-800">Harvest Prediction</h2>
+                <p class="text-white-50 mb-4">Enter your farm details to get an AI-driven production estimate.</p>
+                
+                <form action="/yield" method="POST" class="row g-3">
+                    <div class="col-12 mb-2">
+                        <label class="form-label text-primary-light small fw-bold">SELECT LANGUAGE</label>
+                        <select name="language" class="form-select glass-input">
+                            <option value="en">English</option>
+                            <option value="te">Telugu (తెలుగు)</option>
+                            <option value="hi">Hindi (हिन्दी)</option>
+                            <option value="ta">Tamil (தமிழ்)</option>
+                            <option value="ml">Malayalam (മലയാളം)</option>
+                            <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                            <option value="or">Odia (ଓଡ଼ିଆ)</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label text-primary-light small fw-bold">DISTRICT</label>
+                        <input type="text" name="district" class="form-control glass-input" placeholder="e.g. Guntur" value="{{ input_data.district or '' }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-primary-light small fw-bold">CROP TYPE</label>
+                        <select name="crop" class="form-select glass-input">
+                            <option value="Rice" {% if input_data.crop == 'Rice' %}selected{% endif %}>Rice</option>
+                            <option value="Maize" {% if input_data.crop == 'Maize' %}selected{% endif %}>Maize</option>
+                            <option value="Sugarcane" {% if input_data.crop == 'Sugarcane' %}selected{% endif %}>Sugarcane</option>
+                            <option value="Cotton" {% if input_data.crop == 'Cotton' %}selected{% endif %}>Cotton</option>
+                            <option value="Wheat" {% if input_data.crop == 'Wheat' %}selected{% endif %}>Wheat</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label text-primary-light small fw-bold">NITROGEN (N)</label>
+                        <input type="number" name="n" class="form-control glass-input" value="{{ input_data.n or 80 }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-primary-light small fw-bold">PHOSPHORUS (P)</label>
+                        <input type="number" name="p" class="form-control glass-input" value="{{ input_data.p or 40 }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-primary-light small fw-bold">POTASSIUM (K)</label>
+                        <input type="number" name="k" class="form-control glass-input" value="{{ input_data.k or 40 }}" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label text-primary-light small fw-bold">TEMP (°C)</label>
+                        <input type="number" name="temp" class="form-control glass-input" value="{{ input_data.temp or 28 }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-primary-light small fw-bold">RAINFALL (mm)</label>
+                        <input type="number" name="rainfall" class="form-control glass-input" value="{{ input_data.rainfall or 1200 }}" required>
+                    </div>
+
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn btn-mirror w-100 py-3">Predict My Yield</button>
+                    </div>
+                </form>
+
+                <!-- Added Description to fill space -->
+                <div class="mt-5 pt-4 border-top border-white border-opacity-10">
+                    <h6 class="text-success small fw-bold text-uppercase mb-3">Harvest AI Insights</h6>
+                    <ul class="list-unstyled small text-white-50">
+                        <li class="mb-3"><i class="bi bi-info-circle text-success me-2"></i> Predictions are powered by deep-learning models trained on 10 years of regional climate and soil data.</li>
+                        <li class="mb-3"><i class="bi bi-droplets text-success me-2"></i> Optimal rainfall for most crops in this region is between 800-1200mm. Significant deviation may require irrigation adjustments.</li>
+                        <li class="mb-3"><i class="bi bi-lightning text-success me-2"></i> Maximize your yield by following the specific N-P-K balances suggested in our Soil & Fertilizer tool.</li>
+                        <li class="mb-3"><i class="bi bi-thermometer-sun text-success me-2"></i> Temperature stability is key; most crops thrive between 24°C and 32°C. Extreme heat may lead to early maturation.</li>
+                        <li class="mb-3"><i class="bi bi-shield-check text-success me-2"></i> Regular monitoring using our Plant Doctor can prevent up to 40% of potential yield loss from diseases.</li>
+                        <li class="mb-3"><i class="bi bi-calendar-event text-success me-2"></i> Timing is everything! Align your harvest schedule with the predicted trend peaks shown on the right.</li>
+                        <li><i class="bi bi-graph-up text-success me-2"></i> Click any graph on the right to see a high-detail analysis of your production factors!</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Display -->
+        <div class="col-lg-7">
+            {% if result %}
+                <!-- Top Section: Hero Result -->
+                <div class="glass-card p-4 border-success mb-4 text-center">
+                    <div class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill mb-3">
+                        <i class="bi bi-check-circle-fill me-2"></i> Analysis Complete
+                    </div>
+                    <h2 class="display-3 fw-bold text-gradient mb-1">{{ result }}</h2>
+                    <p class="text-white-50 fs-6">Estimated Tons / Hectare</p>
+                </div>
+
+                <!-- Middle Section: Description & Info -->
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-7">
+                        <div class="glass-card p-4 h-100">
+                            <h5 class="text-success mb-3"><i class="bi bi-robot me-2"></i> AI Diagnostic Report</h5>
+                            {% if trans_result %}
+                            <p class="text-white mb-4 fs-5" style="line-height: 1.8;">{{ trans_result }}</p>
+                            {% endif %}
+                            
+                            {% if audio_file %}
+                            <button onclick="playYieldAudio()" class="btn btn-primary-custom rounded-pill px-4" id="yieldAudioBtn">
+                                <i class="bi bi-play-circle-fill me-2"></i> Listen to AI Summary
+                            </button>
+                            <audio id="yieldAudio" src="{{ url_for('static', filename='audio/' + audio_file) }}" type="audio/mpeg" preload="auto"></audio>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="glass-card p-4 h-100 d-flex flex-column justify-content-center text-center">
+                            <div class="mb-3">
+                                <i class="bi bi-geo-alt-fill text-primary-light display-4"></i>
+                            </div>
+                            <h4 class="text-white mb-2">{{ input_data.district }}</h4>
+                            <p class="text-white-50 mb-0">Regional Analysis Target</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Section: 4 Visualizations (Click to Maximize) -->
+                <div class="row g-3">
+                    <div class="col-12 col-sm-6 col-md-6">
+                        <div class="glass-card p-3 h-100 chart-thumbnail" onclick="maximizeChart('yieldChart', 'Yield Forecast Trend')">
+                            <h6 class="text-white-50 mb-2 x-small fw-bold">Trend Forecast</h6>
+                            <canvas id="yieldChart" style="height: 120px;"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-6">
+                        <div class="glass-card p-3 h-100 chart-thumbnail" onclick="maximizeChart('barChart', 'Regional Comparison')">
+                            <h6 class="text-white-50 mb-2 x-small fw-bold">Regional Data</h6>
+                            <canvas id="barChart" style="height: 120px;"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-6">
+                        <div class="glass-card p-3 h-100 chart-thumbnail" onclick="maximizeChart('radarChart', 'Nutrient Balance')">
+                            <h6 class="text-white-50 mb-2 x-small fw-bold">Soil Balance</h6>
+                            <canvas id="radarChart" style="height: 120px;"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-6">
+                        <div class="glass-card p-3 h-100 chart-thumbnail" onclick="maximizeChart('doughnutChart', 'Yield Factors')">
+                            <h6 class="text-white-50 mb-2 x-small fw-bold">Growth Factors</h6>
+                            <canvas id="doughnutChart" style="height: 120px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal for Maximized Chart -->
+            <div id="chartModal" class="chart-modal" onclick="closeModal()">
+                <div class="modal-content-glass" onclick="event.stopPropagation()">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 id="modalTitle" class="text-white mb-0">Analysis Detail</h4>
+                        <button class="btn-close btn-close-white" onclick="closeModal()"></button>
+                    </div>
+                    <div style="height: 60vh; position: relative;">
+                        <canvas id="maximizedChartCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                .chart-thumbnail { cursor: pointer; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.05); }
+                .chart-thumbnail:hover { transform: translateY(-3px); background: rgba(255,255,255,0.1); border-color: var(--primary-light); }
+                .x-small { font-size: 0.6rem; letter-spacing: 1px; }
+                
+                .chart-modal {
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: rgba(0,0,0,0.9); backdrop-filter: blur(15px);
+                    display: none; align-items: center; justify-content: center; z-index: 9999;
+                    padding: 20px;
+                }
+                .modal-content-glass {
+                    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+                    border-radius: 40px; width: 95%; max-width: 1100px; padding: 40px;
+                    animation: modalIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+                @keyframes modalIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+            </style>
+
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                let mainCharts = {};
+                let maximizedChart = null;
+
+                document.addEventListener('DOMContentLoaded', function() {
+                    Chart.defaults.color = 'rgba(255,255,255,0.5)';
+                    Chart.defaults.font.family = "'Inter', sans-serif";
+                    
+                    const chartData = {
+                        yieldChart: {
+                            type: 'line',
+                            data: {
+                                labels: ['S1', 'S2', 'S3', 'S4', 'S5', 'Goal'],
+                                datasets: [{
+                                    data: {{ trend | default([0,0,0,0,0,0]) | tojson }},
+                                    borderColor: '#10b981',
+                                    tension: 0.4,
+                                    fill: true,
+                                    backgroundColor: 'rgba(16, 185, 129, 0.1)'
+                                }]
+                            },
+                            options: { plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { display: false } } }
+                        },
+                        barChart: {
+                            type: 'bar',
+                            {% if regional_data %}
+                            data: {
+                                labels: {{ regional_data.labels | default([]) | tojson }}.concat(['You']),
+                                datasets: [{
+                                    data: {{ regional_data.chart_values | default([]) | tojson }}.concat([{{ regional_data.current_val | default(0) }}]),
+                                    backgroundColor: ['rgba(59, 130, 246, 0.3)', 'rgba(59, 130, 246, 0.3)', 'rgba(59, 130, 246, 0.3)', 'rgba(59, 130, 246, 0.3)', 'rgba(59, 130, 246, 0.3)', '#10b981'],
+                                    borderRadius: 4
+                                }]
+                            },
+                            {% endif %}
+                            options: { plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { display: false } } }
+                        },
+                        radarChart: {
+                            type: 'radar',
+                            data: {
+                                labels: ['N', 'P', 'K', 'R', 'T'],
+                                datasets: [{
+                                    data: [{{ input_data.n | default(0) }}, {{ input_data.p | default(0) }}, {{ input_data.k | default(0) }}, {{ (input_data.rainfall | default(0) | float) / 20 }}, {{ input_data.temp | default(0) }}],
+                                    backgroundColor: 'rgba(52, 211, 153, 0.2)',
+                                    borderColor: '#34d399'
+                                }]
+                            },
+                            options: { plugins: { legend: { display: false } }, scales: { r: { display: false } } }
+                        },
+                        doughnutChart: {
+                            type: 'doughnut',
+                            data: {
+                                labels: ['Soil', 'Weather', 'Care', 'Seed'],
+                                datasets: [{
+                                    data: [40, 30, 20, 10],
+                                    backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ec4899'],
+                                    borderWidth: 0
+                                }]
+                            },
+                            options: { plugins: { legend: { display: false } } }
+                        }
+                    };
+
+                    // Initialize compact charts
+                    Object.keys(chartData).forEach(id => {
+                        const ctx = document.getElementById(id);
+                        if (ctx) mainCharts[id] = new Chart(ctx, chartData[id]);
+                    });
+
+                    window.maximizeChart = function(chartId, title) {
+                        const modal = document.getElementById('chartModal');
+                        const modalTitle = document.getElementById('modalTitle');
+                        const maxCanvas = document.getElementById('maximizedChartCanvas');
+                        
+                        modalTitle.innerText = title;
+                        modal.style.display = 'flex';
+                        
+                        if (maximizedChart) maximizedChart.destroy();
+                        
+                        // Create high-detail version of the chart
+                        const config = JSON.parse(JSON.stringify(chartData[chartId]));
+                        config.options.scales = {
+                            y: { display: true, grid: { color: 'rgba(255,255,255,0.05)' } },
+                            x: { display: true, grid: { display: false } }
+                        };
+                        if (chartId === 'radarChart') config.options.scales = { r: { display: true, grid: { color: 'rgba(255,255,255,0.1)' } } };
+                        config.options.plugins.legend = { display: true, labels: { color: 'white' } };
+                        
+                        maximizedChart = new Chart(maxCanvas, config);
+                    };
+
+                    window.closeModal = function() {
+                        document.getElementById('chartModal').style.display = 'none';
+                    };
+                });
+
+                function playYieldAudio() {
+                    const audio = document.getElementById('yieldAudio');
+                    const btn = document.getElementById('yieldAudioBtn');
+                    
+                    if (!audio) return;
+
+                    audio.onerror = function() {
+                        alert("Sorry, there was an error loading the audio. Please check your internet connection.");
+                        btn.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i> Audio Error';
+                        btn.classList.add('btn-warning');
+                        btn.classList.remove('btn-primary-custom');
+                    };
+
+                    if (audio.paused) {
+                        audio.play().catch(e => {
+                            console.error("Playback failed:", e);
+                            alert("Audio playback failed. Your browser might be blocking auto-play or the file is missing.");
+                        });
+                        btn.innerHTML = '<i class="bi bi-pause-circle-fill me-2"></i> Stop Summary';
+                        btn.classList.add('btn-danger');
+                        btn.classList.remove('btn-primary-custom');
+                    } else {
+                        audio.pause();
+                        audio.currentTime = 0;
+                        btn.innerHTML = '<i class="bi bi-play-circle-fill me-2"></i> Listen to AI Summary';
+                        btn.classList.add('btn-primary-custom');
+                        btn.classList.remove('btn-danger');
+                    }
+
+                    audio.onended = () => {
+                        btn.innerHTML = '<i class="bi bi-play-circle-fill me-2"></i> Listen to AI Summary';
+                        btn.classList.add('btn-primary-custom');
+                        btn.classList.remove('btn-danger');
+                    };
+                }
+            </script>
+            {% else %}
+            <div class="p-5 text-center">
+                <i class="bi bi-graph-up-arrow display-1 text-primary-light opacity-25 mb-4"></i>
+                <h4>Waiting for Data</h4>
+                <p class="text-white-50">Fill out the form to see your AI-generated harvest prediction and trend analysis.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock body %}

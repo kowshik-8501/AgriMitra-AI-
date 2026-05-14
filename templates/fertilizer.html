@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block pagetitle %}Fertilizer Advisor{% endblock pagetitle %}
+ 
+{% block extra_head %}
+<style>
+    body::before {
+        background-image: url("{{ url_for('static', filename='images/soil_bg.jpg') }}") !important;
+        opacity: 0.3 !important;
+        filter: brightness(0.9) contrast(1.1) !important;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="glass-card p-5 animate-up">
+                <div class="text-center mb-5">
+                    <div class="badge-diagnosis mb-3">Nutrient Management</div>
+                    <h1 class="display-4 text-gradient mb-2">Fertilizer Advisor</h1>
+                    <p class="text-white-50">Get precise fertilizer recommendations based on your soil's NPK levels and target crop</p>
+                </div>
+
+                <form action="/fertilizer" method="POST" class="row g-4">
+                    <!-- Language Selection -->
+                    <div class="col-12 mb-3">
+                        <label class="form-label text-success fw-bold">Select Language</label>
+                        <select name="language" class="form-select glass-input-neon">
+                            <option value="en">English</option>
+                            <option value="te">Telugu (తెలుగు)</option>
+                            <option value="ta">Tamil (தமிழ்)</option>
+                            <option value="ml">Malayalam (മലയാളം)</option>
+                            <option value="hi">Hindi (हिन्दी)</option>
+                            <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                            <option value="or">Odia (ଓଡ଼ିଆ)</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">Target Crop</label>
+                        <select name="crop" class="form-select glass-input-neon" required>
+                            {% for c in crops %}
+                            <option value="{{ c }}">{{ c }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Nitrogen (N)</label>
+                        <input type="number" step="0.1" name="n" class="form-control glass-input" placeholder="kg/ha" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Phosphorus (P)</label>
+                        <input type="number" step="0.1" name="p" class="form-control glass-input" placeholder="kg/ha" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Potassium (K)</label>
+                        <input type="number" step="0.1" name="k" class="form-control glass-input" placeholder="kg/ha" required>
+                    </div>
+
+                    <div class="col-12 mt-5 text-center">
+                        <button type="submit" class="btn btn-primary-custom btn-lg px-5">
+                            <i class="bi bi-flask-fill me-2"></i> Get Recommendations
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            {% if recs %}
+            <div class="mt-5 animate-up">
+                <div class="glass-card p-5 border-primary text-center">
+                    <h2 class="text-primary-light mb-4">AI Advisor Results</h2>
+                    <div class="text-start">
+                        {% if trans_recs %}
+                            {% for r in trans_recs %}
+                            <div class="p-4 mb-3 glass-card border-opacity-10 d-flex align-items-center">
+                                <i class="bi bi-check2-circle text-success fs-3 me-4"></i>
+                                <span class="fs-5">{{ r }}</span>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            {% for r in recs %}
+                            <div class="p-4 mb-3 glass-card border-opacity-10 d-flex align-items-center">
+                                <i class="bi bi-check2-circle text-success fs-3 me-4"></i>
+                                <span class="fs-5">{{ r }}</span>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    {% if audio_file %}
+                    <div class="mt-5 text-center">
+                        <button onclick="playFertilizerAudio()" class="btn btn-primary-custom rounded-pill px-5 py-3" id="fertAudioBtn">
+                            <i class="bi bi-play-circle-fill me-2 fs-5"></i> Listen to AI Advice
+                        </button>
+                        <audio id="fertAudio" src="{{ url_for('static', filename='audio/' + audio_file) }}" type="audio/mpeg" preload="auto"></audio>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mt-5 p-4 bg-success bg-opacity-10 rounded-4 text-white-50 small">
+                        <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+                        Note: Recommendations are based on general crop requirements. For precise application, consult your local soil testing lab.
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .glass-input {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: white !important;
+        border-radius: 12px;
+        padding: 12px 20px;
+    }
+    .glass-input:focus {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--primary);
+    }
+</style>
+
+<script>
+    function playFertilizerAudio() {
+        const audio = document.getElementById('fertAudio');
+        const btn = document.getElementById('fertAudioBtn');
+        
+        if (!audio) return;
+
+        audio.onerror = function() {
+            alert("Sorry, there was an error loading the audio. Please check your internet connection.");
+            btn.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i> Audio Error';
+            btn.classList.add('btn-warning');
+            btn.classList.remove('btn-primary-custom');
+        };
+
+        if (audio.paused) {
+            audio.play().catch(e => {
+                console.error("Playback failed:", e);
+                alert("Audio playback failed. Your browser might be blocking auto-play or the file is missing.");
+            });
+            btn.innerHTML = '<i class="bi bi-pause-circle-fill me-2 fs-5"></i> Stop Advice';
+            btn.classList.add('btn-danger');
+            btn.classList.remove('btn-primary-custom');
+        } else {
+            audio.pause();
+            audio.currentTime = 0;
+            btn.innerHTML = '<i class="bi bi-play-circle-fill me-2 fs-5"></i> Listen to AI Advice';
+            btn.classList.add('btn-primary-custom');
+            btn.classList.remove('btn-danger');
+        }
+
+        audio.onended = () => {
+            btn.innerHTML = '<i class="bi bi-play-circle-fill me-2 fs-5"></i> Listen to AI Advice';
+            btn.classList.add('btn-primary-custom');
+            btn.classList.remove('btn-danger');
+        };
+    }
+</script>
+{% endblock body %}
