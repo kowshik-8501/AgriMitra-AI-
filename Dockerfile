@@ -30,4 +30,4 @@ RUN mkdir -p static/uploads static/audio && \
 EXPOSE 7860
 
 # Command to run the app
-CMD ["gunicorn", "--bind", "0.0.0.0:7860", "app:app"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]

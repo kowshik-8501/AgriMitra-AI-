@@ -62,10 +62,17 @@
                             <option value="or">Odia (ଓଡ଼ିଆ)</option>
                         </select>
                     </div>
+                    
+                    <!-- Geolocation coordinates hidden inputs -->
+                    <input type="hidden" name="lat" id="lat_input" value="">
+                    <input type="hidden" name="lon" id="lon_input" value="">
+
                     <button type="submit" class="btn btn-primary-custom w-100 py-3 d-flex align-items-center justify-content-center gap-2">
                         <i class="bi bi-cpu"></i>
-                        Run Deep Analysis
+                        Run Normal CNN Analysis
                     </button>
+                    
+
                 </form>
             </div>
         </div>
@@ -114,5 +121,17 @@
             fileChosen.style.fontWeight = '600';
         }
     });
+
+    // Auto-fetch location coordinates on load
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            document.getElementById('lat_input').value = position.coords.latitude;
+            document.getElementById('lon_input').value = position.coords.longitude;
+        }, function(error) {
+            console.log("Location access denied or unavailable.");
+        });
+    }
+
+
 </script>
 {% endblock body %}

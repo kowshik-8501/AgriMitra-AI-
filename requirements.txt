@@ -1,4 +1,7 @@
-Flask
+fastapi
+uvicorn[standard]
+python-dotenv
+httpx
 gunicorn
 numpy
 pandas
@@ -8,15 +11,7 @@ torch
 torchvision
 deep-translator
 gTTS
-Werkzeug
-Jinja2
-MarkupSafe
-click
-itsdangerous
-python-dateutil
-pytz
-six
-scikit-learn
-typing-extensions
 requests
 joblib
+faiss-cpu
+

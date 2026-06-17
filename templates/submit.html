@@ -129,10 +129,33 @@
     </div>
 
     <!-- Actions -->
-    <div class="text-center animate-up" style="animation-delay: 0.5s">
+    <div class="d-flex justify-content-center gap-3 align-items-center animate-up mt-4" style="animation-delay: 0.5s">
         <a href="/index" class="btn btn-outline-custom btn-lg px-5">
             <i class="bi bi-arrow-repeat me-2"></i> Run Another Diagnosis
         </a>
+        <form action="/predict_deep" method="POST" style="margin: 0;" id="deepAnalysisForm">
+            <input type="hidden" name="filename" value="{{ filename }}">
+            <input type="hidden" name="language" value="{{ selected_lang }}">
+            <input type="hidden" name="lat" id="deep_lat" value="">
+            <input type="hidden" name="lon" id="deep_lon" value="">
+            <button type="submit" class="btn btn-lg px-5" style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); color: white; border: none; border-radius: 12px; font-weight: 600; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); transition: all 0.2s ease;">
+                <i class="bi bi-magic me-2"></i> Run Plant AI 2.0 Diagnosis
+            </button>
+        </form>
     </div>
+
+    <script>
+        // Auto-fetch location coordinates on load for Deep Analysis
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const latInput = document.getElementById('deep_lat');
+                const lonInput = document.getElementById('deep_lon');
+                if (latInput) latInput.value = position.coords.latitude;
+                if (lonInput) lonInput.value = position.coords.longitude;
+            }, function(error) {
+                console.log("Location access denied or unavailable.");
+            });
+        }
+    </script>
 </div>
 {% endblock body %}
