@@ -255,6 +255,7 @@ class CustomJinja2Templates(Jinja2Templates):
             'yield_prediction': 'yield_page',
             'fertilizer_recommendation': 'fertilizer_page',
             'contact_page': 'contact',
+            'privacy_page': 'privacy',
         }
         @pass_context
         def custom_url_for(context: dict, name: str, /, **path_params: any):
@@ -336,6 +337,10 @@ async def market(request: Request):
 @app.get('/contact', response_class=HTMLResponse)
 async def contact(request: Request):
     return templates.TemplateResponse(request=request, name='contact-us.html')
+
+@app.get('/privacy', response_class=HTMLResponse)
+async def privacy(request: Request):
+    return templates.TemplateResponse(request=request, name='privacy.html')
 
 @app.get('/documentation')
 async def documentation():

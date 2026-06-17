@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block pagetitle %}Privacy Policy & License{% endblock pagetitle %}
+ 
+{% block extra_head %}
+<style>
+    body::before {
+        background-image: url("{{ url_for('static', filename='images/contact_bg.jpg') }}") !important;
+        opacity: 0.25 !important;
+        filter: brightness(0.8) contrast(1.1) !important;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="text-center mb-5 animate-up">
+        <div class="badge-diagnosis mb-3">Privacy & Terms</div>
+        <h1 class="display-4 text-gradient mb-3">Privacy Policy & License Agreement</h1>
+        <p class="text-white-50 lead mx-auto" style="max-width: 600px;">Please read the LeafDoc AI platform rules, privacy commitments, and licensing terms below.</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10 animate-up">
+            <div class="glass-card p-5 shadow-lg border-0">
+                <div class="text-white-50 lh-lg" style="font-size: 1.05rem;">
+                    <h3 class="text-white fw-bold mb-4 pb-2 border-bottom border-secondary border-opacity-25">LeafDoc AI Software License Agreement</h3>
+                    
+                    <p class="mb-4">
+                        This License Agreement governs the use, distribution, modification, deployment, and evaluation of
+                        the LeafDoc AI platform. The software is designed for agricultural disease detection, crop
+                        recommendations, predictive analytics, multilingual farmer support, and related artificial intelligence
+                        services.
+                    </p>
+                    
+                    <p class="mb-4">
+                        By using this software, users agree to comply with all applicable laws, regulations, ethical
+                        AI guidelines, privacy requirements, and operational constraints. The software is provided for
+                        educational, research, commercial evaluation, and agricultural assistance purposes.
+                    </p>
+                    
+                    <p class="mb-4">
+                        Users acknowledge that AI-generated recommendations should be reviewed before critical agricultural
+                        decisions are made. The developers are not liable for indirect losses, incidental damages, or
+                        decisions made solely on the basis of automated outputs.
+                    </p>
+                    
+                    <p class="mb-4">
+                        Users may not reverse engineer, redistribute without authorization, remove attribution, or misrepresent 
+                        the origin of the software. All intellectual property rights remain with the creator unless otherwise 
+                        stated in separate written agreements.
+                    </p>
+                    
+                    <p class="mb-4">
+                        <strong>Privacy & Data Standards:</strong> Data used within the platform must be obtained lawfully and processed in accordance
+                        with relevant privacy standards. To ensure optimal security, user uploads are processed strictly for real-time 
+                        analysis and support, and any personal configurations are kept secure.
+                    </p>
+                    
+                    <p class="mb-4">
+                        The software may receive updates, patches, feature enhancements, model improvements, security updates, and performance optimizations. 
+                        Continued use constitutes acceptance of updated terms where legally permitted.
+                    </p>
+                    
+                    <p class="mb-0">
+                        This agreement covers AI model outputs, generated recommendations, analytical reports, visualizations, disease
+                        classifications, treatment suggestions, multilingual translations, and voice assistance features.
+                    </p>
+                </div>
+                
+                <div class="mt-5 pt-4 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <span class="text-white-50 small">Last updated: June 2026</span>
+                    <a href="{{ url_for('home_page') }}" class="btn btn-outline-custom rounded-pill px-4">
+                        <i class="bi bi-arrow-left me-2"></i> Return Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock body %}
