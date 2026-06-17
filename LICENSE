@@ -1,21 +1,19 @@
-MIT License
+LeafDoc AI Software License Agreement
 
-Copyright (c) 2024 Remalla Ratma Kowshik
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+This License Agreement governs the use, distribution, modification, deployment, and evaluation of
+the LeafDoc AI platform. The software is designed for agricultural disease detection, crop
+recommendations, predictive analytics, multilingual farmer support, and related artificial intelligence
+services. By using this software, users agree to comply with all applicable laws, regulations, ethical
+AI guidelines, privacy requirements, and operational constraints. The software is provided for
+educational, research, commercial evaluation, and agricultural assistance purposes. Users
+acknowledge that AI-generated recommendations should be reviewed before critical agricultural
+decisions are made. The developers are not liable for indirect losses, incidental damages, or
+decisions made solely on the basis of automated outputs. Users may not reverse engineer,
+redistribute without authorization, remove attribution, or misrepresent the origin of the software. All
+intellectual property rights remain with the creator unless otherwise stated in separate written
+agreements. Data used within the platform must be obtained lawfully and processed in accordance
+with relevant privacy standards. The software may receive updates, patches, feature
+enhancements, model improvements, security updates, and performance optimizations. Continued
+use constitutes acceptance of updated terms where legally permitted. This agreement also covers
+AI model outputs, generated recommendations, analytical reports, visualizations, disease
+classifications, treatment suggestions, multilingual translations, and voice assistance features.
