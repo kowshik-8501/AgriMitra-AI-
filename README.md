@@ -10,9 +10,18 @@ pinned: false
 
 # 🌾 AgriMitra AI (कृषिमित्र एआई)
 
+[![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/Kowshik8501/AgriMitraAI)
+[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-black?logo=github)](https://github.com/kowshik-8501/AgriMitra-AI-)
+
 > **Your Ultimate AI-Powered Smart Agriculture Companion & Plant Doctor**
 > 
+> 🚀 **Live App Link**: [https://huggingface.co/spaces/Kowshik8501/AgriMitraAI](https://huggingface.co/spaces/Kowshik8501/AgriMitraAI)
+> 
 > *A state-of-the-art web application powered by Deep Learning, Machine Learning, and Retrieval-Augmented Generation (RAG) to revolutionize farming decisions, disease diagnostics, and crop care.*
+
+<p align="center">
+  <img src="static/images/logo.png" alt="AgriMitra AI Banner" width="550">
+</p>
 
 ---
 
@@ -21,6 +30,32 @@ pinned: false
 **AgriMitra AI** is a premium, fully localized agricultural assistant designed to empower farmers, backyard gardeners, and agronomists. It integrates modern computer vision, predictive algorithms, and generative LLMs to make high-tech farming insights accessible to anyone, anywhere.
 
 The application features a modern, responsive Glassmorphism UI with micro-animations and full multilingual support, including automated localization and voice output (Text-to-Speech) for seamless user interaction.
+
+---
+
+## 🏗️ System Architecture
+
+AgriMitra AI integrates several machine learning and artificial intelligence tiers to deliver end-to-end insights:
+
+```mermaid
+graph TD
+    Farmer([Farmer / User]) -->|Uploads Leaf Image| CV[Computer Vision CNN Model]
+    Farmer -->|Inputs Soil NPK & District| ML[ML: Yield & Crop Models]
+    
+    CV -->|Disease + Confidence| Agent[AgriMitra AI Reasoning Agent]
+    ML -->|Forecast & Crop Recommendation| Agent
+    
+    Agent -->|Context Retrieval| RAG[FAISS Vector Store RAG]
+    Agent -->|Location Coordinates| Weather[Weather Data API]
+    
+    RAG -->|Trusted Agricultural Data| LLM[LLM: Gemini / OpenAI]
+    Weather -->|Temperature, Humidity, Rain| LLM
+    Agent -->|Prompt Context Assembly| LLM
+    
+    LLM -->|Generative Advisory Report| Output[Interactive UI Report]
+    Output -->|TTS Audio Translation| Audio[Voice Output Playback]
+    Output -->|Follow-up Chatbot| Chat[Grounded AI Conversational Support]
+```
 
 ---
 
@@ -85,7 +120,7 @@ Ensure you have **Python 3.10+** installed on your system.
 
 ### 2. Clone the Repository
 ```bash
-git clone https://github.com/kowshik-8501/LeafDoc-AI.git
+git clone https://github.com/kowshik-8501/AgriMitra-AI-.git
 cd "Flask Deployed App"
 ```
 
@@ -132,7 +167,7 @@ git push hf main
 
 ### 3. Add Environment Secrets on Hugging Face
 For security, do not commit API keys to public repositories. Set them as secrets in your Hugging Face Space settings:
-1. Open your Space: `https://huggingface.co/spaces/Kowshik8501/leafdoc-ai`
+1. Open your Space: `https://huggingface.co/spaces/Kowshik8501/AgriMitraAI`
 2. Navigate to **Settings** -> **Variables and secrets**.
 3. Create two new variables:
    * `GEMINI_API_KEY`: *Your Gemini API Key*
