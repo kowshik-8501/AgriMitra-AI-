@@ -17,3 +17,4 @@ Commit iteration 36: Enable request compression in FastAPI middleware
 Commit iteration 37: Configure logs directory creation on app startup
 Commit iteration 38: Refactor predict_disease parameters for code reuse
 Commit iteration 39: Add unit test placeholder for CNN classifier
+Commit iteration 40: Improve response times of FAISS similarity search
