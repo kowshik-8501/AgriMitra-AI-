@@ -14,4 +14,4 @@ gTTS
 requests
 joblib
 faiss-cpu
-
+python-multipart

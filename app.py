@@ -45,10 +45,16 @@ AUDIO_FOLDER = BASE_DIR / 'static' / 'audio'
 for folder in [UPLOAD_FOLDER, AUDIO_FOLDER]:
     folder.mkdir(parents=True, exist_ok=True)
 
+# Translation Cache
+_translation_cache = {}
+
 # Utility functions (same as Flask version)
 def translate_text(text: str, target_lang: str) -> str:
     if not text or target_lang == 'en':
         return text
+    cache_key = (text, target_lang)
+    if cache_key in _translation_cache:
+        return _translation_cache[cache_key]
     lang_map = {
         'hi': 'hi', 'te': 'te', 'ta': 'ta', 'kn': 'kn',
         'ml': 'ml', 'or': 'or'
@@ -56,7 +62,9 @@ def translate_text(text: str, target_lang: str) -> str:
     target = lang_map.get(target_lang, 'hi')
     try:
         from deep_translator import GoogleTranslator
-        return GoogleTranslator(source='auto', target=target).translate(text)
+        res = GoogleTranslator(source='auto', target=target).translate(text)
+        _translation_cache[cache_key] = res
+        return res
     except Exception as e:
         print(f"Translation error: {e}")
         return text
@@ -240,7 +248,7 @@ class YieldPredictor:
 yield_predictor = YieldPredictor()
 
 # FastAPI app
-app = FastAPI(title="Crop Care AI")
+app = FastAPI(title="AgriMitra AI 🌾")
 app.mount('/static', StaticFiles(directory=str(BASE_DIR / 'static'), html=True), name='static')
 
 from jinja2 import pass_context
@@ -304,7 +312,7 @@ async def submit(request: Request, image: UploadFile = File(...), language: str 
         display_desc = translate_text(description, language) if language != 'en' else description
         display_prevent = translate_text(prevent, language) if language != 'en' else prevent
         audio_text = f"Diagnosis result: {lang_note if lang_note else title}. Details: {display_desc}. Prevention: {display_prevent}."
-        audio_file = create_audio(audio_text, language)
+        audio_file = None
         return templates.TemplateResponse(request=request, name='submit.html', context={
             'title': title,
             'desc': display_desc,
@@ -316,6 +324,7 @@ async def submit(request: Request, image: UploadFile = File(...), language: str 
             'buy_link': supplement_buy_link,
             'selected_lang': language,
             'lang_note': lang_note,
+            'audio_text': audio_text,
             'audio_file': audio_file,
             'filename': filename
         })
@@ -370,13 +379,15 @@ async def crop_predict(request: Request,
             language_note = None
             crop_desc = raw_desc
             crop_reason = raw_reason
-        audio_text = f"The AI recommends planting {language_note if language_note else crop_name}. {raw_desc} {raw_reason}"
-        audio_file = create_audio(audio_text, language)
+        audio_text = f"The AI recommends planting {language_note if language_note else crop_name}. {crop_desc} {crop_reason}"
+        audio_file = None
         return templates.TemplateResponse(request=request, name='crop.html', context={
             'crop': crop_name,
             'crop_desc': crop_desc,
             'crop_reason': crop_reason,
             'language_note': language_note,
+            'audio_text': audio_text,
+            'selected_lang': language,
             'audio_file': audio_file
         })
     except Exception as e:
@@ -423,7 +434,7 @@ async def yield_predict(request: Request,
             advice = "Review soil nutrients and irrigation frequency."
         report_text = f"The predicted yield for {crop} in {district} is {pred} tons per hectare. Status: {status}. {advice}"
         trans_result = translate_text(report_text, language) if language != 'en' else report_text
-        audio_file = create_audio(trans_result, language)
+        audio_file = None
         return templates.TemplateResponse(request=request, name='yield.html', context={
             'result': pred,
             'input_data': input_data,
@@ -431,6 +442,8 @@ async def yield_predict(request: Request,
             'regional_data': regional_data,
             'lang': language,
             'trans_result': trans_result,
+            'audio_text': trans_result,
+            'selected_lang': language,
             'audio_file': audio_file
         })
     except Exception as e:
@@ -453,12 +466,13 @@ async def fertilizer_recommend(request: Request,
         else:
             trans_recs = recs
             audio_text = '. '.join(recs)
-        audio_file = create_audio(audio_text, language)
+        audio_file = None
         return templates.TemplateResponse(request=request, name='fertilizer.html', context={
             'recs': recs,
             'trans_recs': trans_recs,
             'data': {'n': nitrogen, 'p': phosphorus, 'k': potassium, 'crop': crop},
             'selected_lang': language,
+            'audio_text': audio_text,
             'audio_file': audio_file,
             'crops': ['Paddy', 'Maize', 'Sugarcane', 'Cotton', 'Wheat', 'Rice']
         })
@@ -478,7 +492,7 @@ async def detect_location(data: dict):
         lat = data.get('lat')
         lon = data.get('lon')
         url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}&zoom=10"
-        headers = {'User-Agent': 'CropCareAI/1.0'}
+        headers = {'User-Agent': 'AgriMitraAI/1.0'}
         resp = requests.get(url, headers=headers).json()
         addr = resp.get('address', {})
         state = addr.get('state', '').lower()

@@ -1,12 +1,12 @@
 :root {
-    --primary: #10b981; /* Emerald 500 */
-    --primary-hover: #059669; /* Emerald 600 */
-    --primary-light: #34d399; /* Emerald 400 */
-    --accent: #fbbf24; /* Amber 400 */
-    --dark: #064e3b; /* Emerald 900 */
-    --bg-dark: #020617; /* Slate 950 */
+    --primary: #15803d; /* Forest Green 700 */
+    --primary-hover: #166534; /* Forest Green 800 */
+    --primary-light: #22c55e; /* Vibrant Green 500 */
+    --accent: #eab308; /* Harvest Gold 500 */
+    --dark: #14532d; /* Deep Pine 900 */
+    --bg-dark: #022c22; /* Premium Deep Green-Slate 950 */
     --text-main: #f8fafc;
-    --text-muted: #cbd5e1; /* Slate 300 - Brighter for better visibility */
+    --text-muted: #cbd5e1; /* Slate 300 */
     --glass: rgba(255, 255, 255, 0.05);
     --glass-border: rgba(255, 255, 255, 0.1);
     --glass-heavy: rgba(255, 255, 255, 0.1);
@@ -22,7 +22,7 @@
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     background-color: var(--bg-dark);
     color: var(--text-main);
     min-height: 100vh;
@@ -46,7 +46,7 @@ body::before {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Playfair Display', serif;
     font-weight: 700;
     letter-spacing: -0.025em;
 }
@@ -128,7 +128,7 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 800;
     font-size: 1.75rem;
     color: #fff !important;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Playfair Display', serif;
     display: flex;
     align-items: center;
     gap: 0.75rem;

@@ -102,7 +102,7 @@ JSON SCHEMA:
                 }
             }
             try:
-                with httpx.Client(timeout=30.0) as client:
+                with httpx.Client(timeout=60.0) as client:
                     res = client.post(url, json=payload)
                     if res.status_code == 200:
                         response_json = res.json()
@@ -218,7 +218,7 @@ ASSISTANT:"""
                 ]
             }
             try:
-                with httpx.Client(timeout=15.0) as client:
+                with httpx.Client(timeout=30.0) as client:
                     res = client.post(url, json=payload)
                     if res.status_code == 200:
                         response_json = res.json()

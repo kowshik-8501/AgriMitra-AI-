@@ -119,12 +119,12 @@
                     {% endif %}
 
                     <div class="mt-5">
-                        {% if audio_file %}
+                        {% if crop %}
                         <button onclick="playCropAudio()" class="btn btn-primary-custom rounded-pill px-5 py-3"
                             id="cropAudioBtn">
                             <i class="bi bi-play-circle-fill me-2 fs-5"></i> Listen to AI Result
                         </button>
-                        <audio id="cropAudio" src="{{ url_for('static', filename='audio/' + audio_file) }}" type="audio/mpeg" preload="auto"></audio>
+                        <audio id="cropAudio" type="audio/mpeg" preload="none"></audio>
                         {% endif %}
                     </div>
                 </div>
@@ -141,34 +141,70 @@
 
         if (!audio) return;
 
-        audio.onerror = function() {
-            alert("Sorry, there was an error loading the audio. Please check your internet connection.");
-            btn.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i> Audio Error';
-            btn.classList.add('btn-warning');
-            btn.classList.remove('btn-primary-custom');
-        };
-
-        if (audio.paused) {
-            audio.play().catch(e => {
-                console.error("Playback failed:", e);
-                alert("Audio playback failed. Your browser might be blocking auto-play or the file is missing.");
-            });
-            btn.innerHTML = '<i class="bi bi-pause-circle-fill me-2"></i> Stop Result';
-            btn.classList.add('btn-danger');
-            btn.classList.remove('btn-primary-custom');
-        } else {
-            audio.pause();
-            audio.currentTime = 0;
-            btn.innerHTML = '<i class="bi bi-play-circle-fill me-2"></i> Listen to AI Result';
-            btn.classList.add('btn-primary-custom');
-            btn.classList.remove('btn-danger');
+        function togglePlay() {
+            if (audio.paused) {
+                audio.play().catch(e => {
+                    console.error("Playback failed:", e);
+                    alert("Audio playback failed. Your browser might be blocking auto-play or the file is missing.");
+                });
+                btn.innerHTML = '<i class="bi bi-pause-circle-fill me-2"></i> Stop Result';
+                btn.classList.add('btn-danger');
+                btn.classList.remove('btn-primary-custom');
+            } else {
+                audio.pause();
+                audio.currentTime = 0;
+                btn.innerHTML = '<i class="bi bi-play-circle-fill me-2"></i> Listen to AI Result';
+                btn.classList.add('btn-primary-custom');
+                btn.classList.remove('btn-danger');
+            }
         }
 
-        audio.onended = () => {
-            btn.innerHTML = '<i class="bi bi-play-circle-fill me-2"></i> Listen to AI Result';
-            btn.classList.add('btn-primary-custom');
-            btn.classList.remove('btn-danger');
-        };
+        if (!audio.src || audio.src === window.location.href) {
+            btn.disabled = true;
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Loading Audio...';
+
+            fetch('/api/speech', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    text: {{ audio_text | default('') | tojson }},
+                    lang: "{{ selected_lang | default('en') }}"
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.disabled = false;
+                if (data.audio_url) {
+                    audio.src = data.audio_url;
+                    audio.onerror = function() {
+                        alert("Sorry, there was an error loading the audio. Please check your internet connection.");
+                        btn.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i> Audio Error';
+                        btn.classList.add('btn-warning');
+                        btn.classList.remove('btn-primary-custom');
+                        btn.classList.remove('btn-danger');
+                    };
+                    audio.onended = () => {
+                        btn.innerHTML = '<i class="bi bi-play-circle-fill me-2"></i> Listen to AI Result';
+                        btn.classList.add('btn-primary-custom');
+                        btn.classList.remove('btn-danger');
+                    };
+                    togglePlay();
+                } else {
+                    alert("Failed to generate audio: " + (data.error || "Unknown error"));
+                    btn.innerHTML = originalHTML;
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                alert("Network error occurred while generating audio.");
+                btn.innerHTML = originalHTML;
+            });
+        } else {
+            togglePlay();
+        }
     }
 </script>
 
