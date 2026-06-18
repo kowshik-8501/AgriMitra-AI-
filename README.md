@@ -15,7 +15,7 @@ pinned: false
 
 > **Your Ultimate AI-Powered Smart Agriculture Companion & Plant Doctor**
 > 
-> 🚀 **Live App Link**: [https://huggingface.co/spaces/Kowshik8501/AgriMitraAI](https://huggingface.co/spaces/Kowshik8501/AgriMitraAI)
+> 🚀 **Live App Link**: [https://kowshik8501-agrimitraai.hf.space/](https://kowshik8501-agrimitraai.hf.space/)
 > 
 > *A state-of-the-art web application powered by Deep Learning, Machine Learning, and Retrieval-Augmented Generation (RAG) to revolutionize farming decisions, disease diagnostics, and crop care.*
 
