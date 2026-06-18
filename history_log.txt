@@ -12,3 +12,4 @@ Commit iteration 31: Improve chatbot memory reset conditions
 Commit iteration 32: Increase timeout for Nominatim OSM API request
 Commit iteration 33: Update supplement_info.csv product URLs
 Commit iteration 34: Optimize text-to-speech file creation logic
+Commit iteration 35: Add system health check endpoint '/health'
