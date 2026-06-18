@@ -8,3 +8,4 @@ Commit iteration 27: Add placeholder fallback for missing crop details
 Commit iteration 28: Update requirements.txt with safety constraints
 Commit iteration 29: Format style.css glassmorphic classes for readability
 Commit iteration 30: Add reverse location detection mappings for additional states
+Commit iteration 31: Improve chatbot memory reset conditions
