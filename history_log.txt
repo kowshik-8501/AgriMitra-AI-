@@ -5,3 +5,4 @@ Commit iteration 24: Add docstrings to RAG retrieval pipeline
 Commit iteration 25: Improve error handling in API translation helper
 Commit iteration 26: Adjust margins on yield prediction chart canvas
 Commit iteration 27: Add placeholder fallback for missing crop details
+Commit iteration 28: Update requirements.txt with safety constraints
