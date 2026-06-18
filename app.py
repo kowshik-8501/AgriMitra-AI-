@@ -272,7 +272,8 @@ class CustomJinja2Templates(Jinja2Templates):
             name = _flask_to_fastapi.get(name, name)
             if name == "static" and "filename" in path_params:
                 path_params["path"] = path_params.pop("filename")
-            return request.url_for(name, **path_params)
+            url = request.url_for(name, **path_params)
+            return url.path + (f"?{url.query}" if url.query else "")
         self.env.globals["url_for"] = custom_url_for
 
 templates = CustomJinja2Templates(directory=[
