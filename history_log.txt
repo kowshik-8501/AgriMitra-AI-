@@ -19,3 +19,4 @@ Commit iteration 38: Refactor predict_disease parameters for code reuse
 Commit iteration 39: Add unit test placeholder for CNN classifier
 Commit iteration 40: Improve response times of FAISS similarity search
 Commit iteration 41: Add styling for active states in nav links
+Commit iteration 42: Document risk calculation algorithm in risk_model.py
